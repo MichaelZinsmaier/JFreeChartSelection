@@ -498,6 +498,30 @@ public abstract class AbstractRenderer implements Cloneable, Serializable {
      */
     public abstract DrawingSupplier getDrawingSupplier();
 
+    
+    // SETTER FOR ITEM RENDERING STRATEGIES
+    
+    public void setLabelIRS(LabelIRS labelIRS) {
+    	this.labelIRS = labelIRS;
+    }
+    
+    public void setPaintIRS(PaintIRS paintIRS) {
+    	this.paintIRS = paintIRS;
+    }
+    
+    public void setShapeIRS(ShapeIRS shapeIRS) {
+    	this.shapeIRS = shapeIRS;
+    }
+    
+    public void setStrokeIRS(StrokeIRS strokeIRS) {
+    	this.strokeIRS = strokeIRS;
+    }
+    
+    public void setVisibilityIRS(VisibilityIRS visibilityIRS) {
+    	this.visibilityIRS = visibilityIRS;
+    }
+    
+    
     // SERIES VISIBLE (not yet respected by all renderers)
 
     /**
