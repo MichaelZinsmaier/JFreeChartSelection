@@ -1,3 +1,5 @@
+package org.jfree.chart.panel.selectionhandler;
+
 /* ===========================================================
  * JFreeChart : a free chart library for the Java(tm) platform
  * ===========================================================
@@ -38,58 +40,43 @@
  *
  */
 
-package org.jfree.chart.panel;
-
-import java.awt.BasicStroke;
-import java.awt.Color;
 import java.awt.Paint;
 import java.awt.Point;
 import java.awt.Stroke;
 import java.awt.event.MouseEvent;
-import java.awt.geom.GeneralPath;
+import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.util.ShapeUtilities;
+
 /**
  * A mouse handler that allows data items to be selected.
  *
  * @since 1.0.14
  */
-public class RegionSelectionHandler extends AbstractMouseHandler {
+public class CircularRegionSelectionHandler extends RegionSelectionHandler {
 
     /**
      * The selection path (in Java2D space).
      */
-    private GeneralPath selection;
+    private Ellipse2D selection;
 
     /**
-     * The last mouse point.
+     * The start mouse point.
      */
-    private Point2D lastPoint;
+    private Point2D startPoint;
 
-    /**
-     * The outline stroke.
-     */
-    private Stroke outlineStroke;
-
-    /**
-     * The outline paint.
-     */
-    private Paint outlinePaint;
-
-    /**
-     * The fill paint.
-     */
-    private Paint fillPaint;
 
     /**
      * Creates a new default instance.
      */
-    public RegionSelectionHandler() {
-        this(new BasicStroke(1.0f), Color.darkGray, new Color(255, 0, 255, 50));
+    public CircularRegionSelectionHandler() {
+    	super();
+        this.selection = null;
+        this.startPoint = null;
     }
 
     /**
@@ -99,53 +86,13 @@ public class RegionSelectionHandler extends AbstractMouseHandler {
      * @param outlinePaint  the outline paint.
      * @param fillPaint  the fill paint.
      */
-    public RegionSelectionHandler(Stroke outlineStroke, Paint outlinePaint,
+    public CircularRegionSelectionHandler(Stroke outlineStroke, Paint outlinePaint,
             Paint fillPaint) {
-        super();
-        this.selection = new GeneralPath();
-        this.lastPoint = null;
-        this.outlineStroke = new BasicStroke(1.0f);
-        this.outlinePaint = Color.darkGray;
-        this.fillPaint = new Color(255, 0, 255, 50);
+        super(outlineStroke, outlinePaint, fillPaint);
+        this.selection = null;
+        this.startPoint = null;
     }
 
-    /**
-     * Returns the fill paint.
-     *
-     * @return The fill paint (possibly <code>null</code>).
-     *
-     * @see #setFillPaint(java.awt.Paint)
-     */
-    public Paint getFillPaint() {
-        return fillPaint;
-    }
-
-    /**
-     * Sets the fill paint.
-     *
-     * @param fillPaint  the fill paint (<code>null</code> permitted).
-     *
-     * @see #getFillPaint()
-     */
-    public void setFillPaint(Paint fillPaint) {
-        this.fillPaint = fillPaint;
-    }
-
-    public Paint getOutlinePaint() {
-        return outlinePaint;
-    }
-
-    public void setOutlinePaint(Paint outlinePaint) {
-        this.outlinePaint = outlinePaint;
-    }
-
-    public Stroke getOutlineStroke() {
-        return outlineStroke;
-    }
-
-    public void setOutlineStroke(Stroke outlineStroke) {
-        this.outlineStroke = outlineStroke;
-    }
 
     /**
      * Handles a mouse pressed event.
@@ -158,6 +105,7 @@ public class RegionSelectionHandler extends AbstractMouseHandler {
         if (dataArea.contains(e.getPoint())) {
 
             JFreeChart chart = panel.getChart();
+//NOT IMPLEMENTED            
 //            if (panel instanceof Selectable) {
 //                Selectable s = (Selectable) panel;
 //                if (!e.isShiftDown()) {
@@ -165,8 +113,7 @@ public class RegionSelectionHandler extends AbstractMouseHandler {
 //                    chart.setNotify(true);
 //                }
                 Point pt = e.getPoint();
-                this.selection.moveTo(pt.getX(), pt.getY());
-                this.lastPoint = new Point(pt);
+                this.startPoint = new Point(pt);
 //            }
             
         }
@@ -178,17 +125,41 @@ public class RegionSelectionHandler extends AbstractMouseHandler {
      * @param e  the event.
      */
     public void mouseDragged(MouseEvent e) {
-        if (this.lastPoint == null) {
+        if (this.startPoint == null) {
             return;  // we never started a selection
         }
         ChartPanel panel = (ChartPanel) e.getSource();
         Point pt = e.getPoint();
         Point2D pt2 = ShapeUtilities.getPointInRectangle(pt.x, pt.y,
                 panel.getScreenDataArea());
-        if (pt2.distance(this.lastPoint) > 5) {
-            this.selection.lineTo(pt2.getX(), pt2.getY());
-            this.lastPoint = pt2;
+
+        double r = startPoint.distance(pt2);
+
+        if (r <= 0) {
+        	r = 1.0;
         }
+        
+        //ensure that r is small enough to hold the circle in the drawing area
+        //selecting things that are not visible / not painted would be problematic
+        Point corner1Test = new Point((int)(startPoint.getX()), (int)(startPoint.getY() + r));
+        r = startPoint.distance(ShapeUtilities.getPointInRectangle(corner1Test.getX(),corner1Test.getY(),
+                panel.getScreenDataArea()));
+        
+        Point corner2Test = new Point((int)(startPoint.getX() + r), (int)(startPoint.getY()));
+        r = startPoint.distance(ShapeUtilities.getPointInRectangle(corner2Test.getX(),corner2Test.getY(),
+                panel.getScreenDataArea()));
+        
+        Point corner3Test = new Point((int)(startPoint.getX() - r), (int)(startPoint.getY()));
+        r = startPoint.distance(ShapeUtilities.getPointInRectangle(corner3Test.getX(),corner3Test.getY(),
+                panel.getScreenDataArea()));
+        
+        Point corner4Test = new Point((int)(startPoint.getX()), (int)(startPoint.getY() - r));
+        r = startPoint.distance(ShapeUtilities.getPointInRectangle(corner4Test.getX(),corner4Test.getY(),
+                panel.getScreenDataArea()));
+
+        
+        this.selection = new Ellipse2D.Double((startPoint.getX() - r), (startPoint.getY() - r), (2.0*r), (2.0*r));
+        
         panel.setSelectionShape(selection);
         panel.setSelectionFillPaint(this.fillPaint);
         panel.setSelectionOutlinePaint(this.outlinePaint);
@@ -196,11 +167,10 @@ public class RegionSelectionHandler extends AbstractMouseHandler {
     }
 
     public void mouseReleased(MouseEvent e) {
-        if (this.lastPoint == null) {
+        if (this.startPoint == null) {
             return;  // we never started a selection
         }
         ChartPanel panel = (ChartPanel) e.getSource();
-        this.selection.closePath();
 
         // do something with the selection shape
        
@@ -210,8 +180,8 @@ public class RegionSelectionHandler extends AbstractMouseHandler {
 //        }
         
         panel.setSelectionShape(null);
-        this.selection.reset();
-        this.lastPoint = null;
+        this.selection = null;
+        this.startPoint = null;
         panel.repaint();
         panel.clearLiveMouseHandler();
     }
