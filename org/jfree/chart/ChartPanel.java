@@ -245,6 +245,7 @@ import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.PlotRenderingInfo;
 import org.jfree.chart.plot.Zoomable;
 import org.jfree.chart.util.ResourceBundleWrapper;
+import org.jfree.data.selection.SelectionManager;
 import org.jfree.io.SerialUtilities;
 import org.jfree.ui.ExtensionFileFilter;
 
@@ -257,7 +258,7 @@ import org.jfree.ui.ExtensionFileFilter;
  */
 public class ChartPanel extends JPanel implements ChartChangeListener,
 		ChartProgressListener, ActionListener, MouseListener,
-		MouseMotionListener, OverlayChangeListener, Printable, Serializable {
+		MouseMotionListener, OverlayChangeListener, Printable, Serializable, RenderingSource {
 
 	/** For serialization. */
 	private static final long serialVersionUID = 6046366297214274674L;
@@ -553,6 +554,10 @@ public class ChartPanel extends JPanel implements ChartChangeListener,
 	 * @since 1.0.13
 	 */
 	private List overlays;
+	
+
+	private SelectionManager selectionManager;
+	
 
 	/**
 	 * Constructs a panel that displays the specified chart.
@@ -3292,6 +3297,14 @@ public class ChartPanel extends JPanel implements ChartChangeListener,
 
 	public ZoomHandler getZoomHandler() {
 		return this.zoomHandler;
+	}
+
+	public SelectionManager getSelectionManager() {
+		return this.selectionManager;
+	}
+
+	public void setSelectionManager(SelectionManager manager) {
+		this.selectionManager = manager;
 	}
 
 }

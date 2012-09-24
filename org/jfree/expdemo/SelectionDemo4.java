@@ -27,12 +27,14 @@ import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.panel.selectionhandler.FreeRegionSelectionHandler;
+import org.jfree.chart.panel.selectionhandler.RegionSelectionHandler;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.StandardXYBarPainter;
 import org.jfree.chart.renderer.xy.XYBarRenderer;
 import org.jfree.data.general.DatasetChangeEvent;
 import org.jfree.data.general.DatasetChangeListener;
+import org.jfree.data.selection.EntitySelectionManager;
 import org.jfree.data.statistics.HistogramDataset;
 import org.jfree.data.statistics.SimpleHistogramBin;
 import org.jfree.data.statistics.SimpleHistogramDataset;
@@ -241,10 +243,10 @@ public class SelectionDemo4 extends ApplicationFrame {
         panel.setMouseWheelEnabled(true);
         panel.removeMouseHandler(panel.getZoomHandler());
 
-        FreeRegionSelectionHandler selectionHandler = new FreeRegionSelectionHandler();
+        RegionSelectionHandler selectionHandler = new FreeRegionSelectionHandler();
         //selectionHandler.setModifier(InputEvent.SHIFT_MASK);
         panel.addMouseHandler(selectionHandler);
-
+        panel.setSelectionManager(new EntitySelectionManager(panel));
         return panel;
     }
 
