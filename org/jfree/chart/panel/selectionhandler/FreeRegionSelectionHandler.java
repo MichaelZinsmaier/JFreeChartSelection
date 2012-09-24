@@ -49,7 +49,6 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
 import org.jfree.chart.ChartPanel;
-import org.jfree.chart.RenderingSource;
 import org.jfree.data.selection.SelectionManager;
 import org.jfree.util.ShapeUtilities;
 
@@ -106,8 +105,7 @@ public class FreeRegionSelectionHandler extends RegionSelectionHandler {
 		ChartPanel panel = (ChartPanel) e.getSource();
 		Rectangle2D dataArea = panel.getScreenDataArea();
 		if (dataArea.contains(e.getPoint())) {
-			if (panel instanceof RenderingSource) {
-				SelectionManager selectionManager = ((RenderingSource) panel).getSelectionManager();
+				SelectionManager selectionManager = panel.getSelectionManager();
 				if (selectionManager != null) {
 					// NOT IMPLEMENTED
 					
@@ -119,7 +117,6 @@ public class FreeRegionSelectionHandler extends RegionSelectionHandler {
 					Point pt = e.getPoint();
 					this.selectionPath.moveTo(pt.getX(), pt.getY());
 					this.lastPoint = new Point(pt);
-				}
 			}
 		}
 	}
@@ -154,8 +151,7 @@ public class FreeRegionSelectionHandler extends RegionSelectionHandler {
 		}
 		ChartPanel panel = (ChartPanel) e.getSource();
 		this.selectionPath.closePath();
-		SelectionManager selectionManager = ((RenderingSource) panel)
-				.getSelectionManager();
+		SelectionManager selectionManager = panel.getSelectionManager();
 
 		// do something with the selection shape
 		if (selectionManager != null) {

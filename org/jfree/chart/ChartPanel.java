@@ -258,7 +258,7 @@ import org.jfree.ui.ExtensionFileFilter;
  */
 public class ChartPanel extends JPanel implements ChartChangeListener,
 		ChartProgressListener, ActionListener, MouseListener,
-		MouseMotionListener, OverlayChangeListener, Printable, Serializable, RenderingSource {
+		MouseMotionListener, OverlayChangeListener, Printable, Serializable {
 
 	/** For serialization. */
 	private static final long serialVersionUID = 6046366297214274674L;
