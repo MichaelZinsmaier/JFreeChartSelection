@@ -10,6 +10,7 @@ public interface SelectionManager {
 	public void select(Rectangle2D selection);
 	
 	public void select(GeneralPath selection);
-	
+
+	public void clearSelection();
 	
 }

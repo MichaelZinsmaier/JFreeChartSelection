@@ -107,14 +107,13 @@ public class RectangularRegionSelectionHandler extends RegionSelectionHandler {
 		if (dataArea.contains(e.getPoint())) {
 			SelectionManager selectionManager = panel.getSelectionManager();
 				if (selectionManager != null) {
-					// NOT IMPLEMENTED
-					
-					// if (!e.isShiftDown()) {
-					// s.clearSelection();
-					// chart.setNotify(true);
-					// }
+					if (!e.isShiftDown()) {
+					   selectionManager.clearSelection();
+					   panel.getChart().fireChartChanged();
+					}
 					Point pt = e.getPoint();
 					this.startPoint = new Point(pt);
+					this.selectionRect = new Rectangle(pt.x, pt.y, 1, 1);
 				}
 		}
 	}
@@ -152,6 +151,7 @@ public class RectangularRegionSelectionHandler extends RegionSelectionHandler {
 		// do something with the selection shape
 		if (selectionManager != null) {
 			selectionManager.select(selectionRect);
+			panel.getChart().fireChartChanged();
 		}
 
 		panel.setSelectionShape(null);
