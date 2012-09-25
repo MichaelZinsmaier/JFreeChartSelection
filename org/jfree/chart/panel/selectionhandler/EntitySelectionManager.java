@@ -172,8 +172,10 @@ public class EntitySelectionManager implements SelectionManager {
 					this.xyCursor.setPosition(((XYItemEntity)e).getSeriesIndex(), ((XYItemEntity)e).getItem());
 					cursor = this.xyCursor;
 				} else if (e instanceof CategoryItemEntity) {
+					this.categoryCursor.setPosition(((CategoryItemEntity)e).getRowKey(), ((CategoryItemEntity)e).getColumnKey());
 					cursor = this.categoryCursor;
 				} else if (e instanceof PieSectionEntity) {
+					this.pieCursor.setPosition(((PieSectionEntity)e).getSectionKey());					
 					cursor = this.pieCursor;
 				}
 
