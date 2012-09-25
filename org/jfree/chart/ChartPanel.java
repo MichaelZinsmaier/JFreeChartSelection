@@ -240,12 +240,12 @@ import org.jfree.chart.panel.AbstractMouseHandler;
 import org.jfree.chart.panel.Overlay;
 import org.jfree.chart.panel.PanHandler;
 import org.jfree.chart.panel.ZoomHandler;
+import org.jfree.chart.panel.selectionhandler.SelectionManager;
 import org.jfree.chart.plot.Plot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.PlotRenderingInfo;
 import org.jfree.chart.plot.Zoomable;
 import org.jfree.chart.util.ResourceBundleWrapper;
-import org.jfree.data.selection.SelectionManager;
 import org.jfree.io.SerialUtilities;
 import org.jfree.ui.ExtensionFileFilter;
 

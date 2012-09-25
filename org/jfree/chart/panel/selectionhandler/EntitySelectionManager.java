@@ -1,4 +1,4 @@
-package org.jfree.data.selection;
+package org.jfree.chart.panel.selectionhandler;
 
 import java.awt.geom.Area;
 import java.awt.geom.GeneralPath;
