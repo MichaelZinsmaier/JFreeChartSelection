@@ -111,7 +111,6 @@ public class RectangularRegionSelectionHandler extends RegionSelectionHandler {
 				if (selectionManager != null) {
 					if (!e.isShiftDown()) {
 					   selectionManager.clearSelection();
-					   panel.getChart().fireChartChanged();
 					}
 					Point pt = e.getPoint();
 					this.startPoint = new Point(pt);
@@ -153,7 +152,6 @@ public class RectangularRegionSelectionHandler extends RegionSelectionHandler {
 		// do something with the selection shape
 		if (selectionManager != null) {
 			selectionManager.select(selectionRect);
-			panel.getChart().fireChartChanged();
 		}
 
 		panel.setSelectionShape(null);

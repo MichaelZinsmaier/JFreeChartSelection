@@ -159,7 +159,7 @@ public class SelectionDemo5Category extends ApplicationFrame{
 	        
 	        //extend the dataset with selection storage
 	        DatasetExtensionManager dExManager = new DatasetExtensionManager();
-	        final DatasetSelectionExtension ext = new CategoryDatasetSelectionExtension(data); 
+	        final DatasetSelectionExtension ext = new CategoryDatasetSelectionExtension(data, chart.getPlot()); 
 	        dExManager.registerDatasetExtension(ext);
 	                
 	        //extend the renderer

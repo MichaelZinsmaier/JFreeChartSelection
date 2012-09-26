@@ -112,7 +112,6 @@ public class CircularRegionSelectionHandler extends RegionSelectionHandler {
 				if (selectionManager != null) {
 					if (!e.isShiftDown()) {
 						   selectionManager.clearSelection();
-						   panel.getChart().fireChartChanged();
 					}
 					Point pt = e.getPoint();
 					this.startPoint = new Point(pt);
@@ -188,7 +187,6 @@ public class CircularRegionSelectionHandler extends RegionSelectionHandler {
 		// do something with the selection shape
 		if (selectionManager != null) {
 			selectionManager.select(new GeneralPath(this.selectionCircle));
-			panel.getChart().fireChartChanged();
 		}
 
 		panel.setSelectionShape(null);

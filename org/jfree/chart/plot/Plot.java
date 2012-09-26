@@ -173,6 +173,8 @@ import org.jfree.chart.event.PlotChangeListener;
 import org.jfree.data.general.DatasetChangeEvent;
 import org.jfree.data.general.DatasetChangeListener;
 import org.jfree.data.general.DatasetGroup;
+import org.jfree.data.general.SelectionChangeEvent;
+import org.jfree.data.general.SelectionChangeListener;
 import org.jfree.io.SerialUtilities;
 import org.jfree.text.G2TextMeasurer;
 import org.jfree.text.TextBlock;
@@ -191,7 +193,7 @@ import org.jfree.util.PublicCloneable;
  * provides facilities common to most plot types.
  */
 public abstract class Plot implements AxisChangeListener,
-        DatasetChangeListener, AnnotationChangeListener, MarkerChangeListener,
+        DatasetChangeListener, SelectionChangeListener, AnnotationChangeListener, MarkerChangeListener,
         LegendItemSource, PublicCloneable, Cloneable, Serializable {
 
     /** For serialization. */
@@ -1234,6 +1236,12 @@ public abstract class Plot implements AxisChangeListener,
         PlotChangeEvent newEvent = new PlotChangeEvent(this);
         newEvent.setType(ChartChangeEventType.DATASET_UPDATED);
         notifyListeners(newEvent);
+    }
+    
+    public void selectionChanged(SelectionChangeEvent event) {
+        PlotChangeEvent newEvent = new PlotChangeEvent(this);
+        newEvent.setType(ChartChangeEventType.GENERAL);
+        notifyListeners(newEvent);    	
     }
 
     /**
