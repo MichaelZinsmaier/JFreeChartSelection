@@ -49,6 +49,9 @@
 
 package org.jfree.data.general;
 
+import org.jfree.data.event.DatasetChangeEvent;
+import org.jfree.data.event.DatasetChangeListener;
+
 /**
  * The base interface for data sets.
  * <P>

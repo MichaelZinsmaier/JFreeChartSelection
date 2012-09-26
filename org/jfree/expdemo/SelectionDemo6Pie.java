@@ -17,11 +17,11 @@ import org.jfree.data.datasetextension.DatasetSelectionExtension;
 import org.jfree.data.datasetextension.impl.DatasetExtensionManager;
 import org.jfree.data.datasetextension.impl.PieCursor;
 import org.jfree.data.datasetextension.impl.PieDatasetSelectionExtension;
+import org.jfree.data.event.SelectionChangeEvent;
+import org.jfree.data.event.SelectionChangeListener;
 import org.jfree.data.general.Dataset;
 import org.jfree.data.general.DefaultPieDataset;
 import org.jfree.data.general.PieDataset;
-import org.jfree.data.general.SelectionChangeEvent;
-import org.jfree.data.general.SelectionChangeListener;
 import org.jfree.ui.ApplicationFrame;
 import org.jfree.ui.RefineryUtilities;
 

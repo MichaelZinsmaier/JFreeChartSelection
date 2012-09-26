@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.jfree.data.datasetextension.DatasetCursor;
+import org.jfree.data.event.SelectionChangeListener;
 import org.jfree.data.general.Dataset;
-import org.jfree.data.general.SelectionChangeListener;
 import org.jfree.data.xy.XYDataset;
 
 //TODO incomplete implementation missing handler for dataset changes ...

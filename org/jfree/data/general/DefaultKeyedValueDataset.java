@@ -45,6 +45,7 @@ import java.io.Serializable;
 
 import org.jfree.data.DefaultKeyedValue;
 import org.jfree.data.KeyedValue;
+import org.jfree.data.event.DatasetChangeEvent;
 import org.jfree.util.ObjectUtilities;
 
 /**

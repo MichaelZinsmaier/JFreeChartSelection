@@ -174,7 +174,7 @@ public class TimePeriodValuesCollection extends AbstractIntervalXYDataset
 
     /**
      * Adds a series to the collection.  A
-     * {@link org.jfree.data.general.DatasetChangeEvent} is sent to all
+     * {@link org.jfree.data.event.DatasetChangeEvent} is sent to all
      * registered listeners.
      *
      * @param series  the time series.

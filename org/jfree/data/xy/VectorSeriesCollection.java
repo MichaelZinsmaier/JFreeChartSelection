@@ -47,7 +47,7 @@ package org.jfree.data.xy;
 import java.io.Serializable;
 import java.util.List;
 
-import org.jfree.data.general.DatasetChangeEvent;
+import org.jfree.data.event.DatasetChangeEvent;
 import org.jfree.util.ObjectUtilities;
 import org.jfree.util.PublicCloneable;
 

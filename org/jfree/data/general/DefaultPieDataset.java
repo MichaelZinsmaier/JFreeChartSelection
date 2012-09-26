@@ -63,6 +63,7 @@ import java.util.List;
 import org.jfree.data.DefaultKeyedValues;
 import org.jfree.data.KeyedValues;
 import org.jfree.data.UnknownKeyException;
+import org.jfree.data.event.DatasetChangeEvent;
 import org.jfree.util.PublicCloneable;
 import org.jfree.util.SortOrder;
 

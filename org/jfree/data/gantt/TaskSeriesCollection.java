@@ -241,7 +241,7 @@ public class TaskSeriesCollection extends AbstractSeriesDataset
 
     /**
      * Adds a series to the dataset and sends a
-     * {@link org.jfree.data.general.DatasetChangeEvent} to all registered
+     * {@link org.jfree.data.event.DatasetChangeEvent} to all registered
      * listeners.
      *
      * @param series  the series (<code>null</code> not permitted).
@@ -268,7 +268,7 @@ public class TaskSeriesCollection extends AbstractSeriesDataset
 
     /**
      * Removes a series from the collection and sends
-     * a {@link org.jfree.data.general.DatasetChangeEvent}
+     * a {@link org.jfree.data.event.DatasetChangeEvent}
      * to all registered listeners.
      *
      * @param series  the series.
@@ -286,7 +286,7 @@ public class TaskSeriesCollection extends AbstractSeriesDataset
 
     /**
      * Removes a series from the collection and sends
-     * a {@link org.jfree.data.general.DatasetChangeEvent}
+     * a {@link org.jfree.data.event.DatasetChangeEvent}
      * to all registered listeners.
      *
      * @param series  the series (zero based index).
@@ -307,7 +307,7 @@ public class TaskSeriesCollection extends AbstractSeriesDataset
 
     /**
      * Removes all the series from the collection and sends
-     * a {@link org.jfree.data.general.DatasetChangeEvent}
+     * a {@link org.jfree.data.event.DatasetChangeEvent}
      * to all registered listeners.
      */
     public void removeAll() {

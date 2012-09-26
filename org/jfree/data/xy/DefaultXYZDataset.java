@@ -49,7 +49,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.jfree.data.DomainOrder;
-import org.jfree.data.general.DatasetChangeEvent;
+import org.jfree.data.event.DatasetChangeEvent;
 import org.jfree.util.PublicCloneable;
 
 /**

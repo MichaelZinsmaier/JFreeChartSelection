@@ -3,8 +3,8 @@ package org.jfree.data.datasetextension.impl;
 import org.jfree.data.DefaultKeyedValues2D;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.datasetextension.DatasetCursor;
+import org.jfree.data.event.SelectionChangeListener;
 import org.jfree.data.general.Dataset;
-import org.jfree.data.general.SelectionChangeListener;
 
 //TODO incomplete implementation missing handler for dataset changes ...
 

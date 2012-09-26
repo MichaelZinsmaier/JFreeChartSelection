@@ -32,12 +32,13 @@ import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.AbstractRenderer;
 import org.jfree.chart.renderer.contribution.DefaultPaintIRS;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
+import org.jfree.data.datasetextension.DatasetSelectionExtension;
 import org.jfree.data.datasetextension.impl.DatasetExtensionManager;
 import org.jfree.data.datasetextension.impl.XYCursor;
 import org.jfree.data.datasetextension.impl.XYDatasetSelectionExtension;
+import org.jfree.data.event.DatasetChangeEvent;
+import org.jfree.data.event.DatasetChangeListener;
 import org.jfree.data.general.Dataset;
-import org.jfree.data.general.DatasetChangeEvent;
-import org.jfree.data.general.DatasetChangeListener;
 import org.jfree.data.time.Month;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
@@ -223,7 +224,7 @@ public class SelectionDemo1 extends ApplicationFrame
         
         //extend the dataset with selection storage
         DatasetExtensionManager dExManager = new DatasetExtensionManager();
-        final XYDatasetSelectionExtension ext = new XYDatasetSelectionExtension(data, chart.getPlot()); 
+        final DatasetSelectionExtension ext = new XYDatasetSelectionExtension(data, chart.getPlot()); 
         dExManager.registerDatasetExtension(ext);
                 
         //extend the renderer

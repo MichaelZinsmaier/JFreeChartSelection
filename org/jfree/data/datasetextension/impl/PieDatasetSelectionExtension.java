@@ -4,9 +4,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 import org.jfree.data.datasetextension.DatasetCursor;
+import org.jfree.data.event.SelectionChangeListener;
 import org.jfree.data.general.Dataset;
 import org.jfree.data.general.PieDataset;
-import org.jfree.data.general.SelectionChangeListener;
 
 
 //TODO incomplete implementation missing handler for dataset changes ...
