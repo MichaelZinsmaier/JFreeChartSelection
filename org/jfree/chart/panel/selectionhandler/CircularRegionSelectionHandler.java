@@ -102,6 +102,9 @@ public class CircularRegionSelectionHandler extends RegionSelectionHandler {
 	 *            the event.
 	 */
 	public void mousePressed(MouseEvent e) {
+		if (!(e.getSource() instanceof ChartPanel)) {
+			return;
+		}
 		ChartPanel panel = (ChartPanel) e.getSource();
 		Rectangle2D dataArea = panel.getScreenDataArea();
 		if (dataArea.contains(e.getPoint())) {
