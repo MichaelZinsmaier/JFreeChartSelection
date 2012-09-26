@@ -44,6 +44,8 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 
+import org.jfree.chart.ChartPanel;
+
 /**
  * A handler for mouse events in a {@link ChartPanel}.  A handler can be
  * assigned a modifier and installed on the panel to be invoked by the user.
@@ -98,7 +100,7 @@ public class AbstractMouseHandler implements MouseListener,
      * @param e  the mouse event.
      */
     public void mouseReleased(MouseEvent e) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        // override if you need this method to do something
     }
 
     /**
@@ -108,7 +110,7 @@ public class AbstractMouseHandler implements MouseListener,
      * @param e  the mouse event.
      */
     public void mouseClicked(MouseEvent e) {
-        throw new UnsupportedOperationException("Not supported yet.");
+        // override if you need this method to do something
     }
 
     /**
@@ -148,7 +150,7 @@ public class AbstractMouseHandler implements MouseListener,
      * @param e  the mouse event.
      */
     public void mouseDragged(MouseEvent e) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    	// override if you need this method to do something
     }
 
 }
