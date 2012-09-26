@@ -11,7 +11,12 @@ public class SelectionChangeEvent extends EventObject {
 	}
 
     public DatasetSelectionExtension getSelectionExtension() {
-        return (DatasetSelectionExtension)this.getSource();
+        if (this.getSource() instanceof DatasetSelectionExtension) {
+        	return (DatasetSelectionExtension)this.getSource();
+        }
+        
+        //implementation error
+        return null;
     }
 
 }

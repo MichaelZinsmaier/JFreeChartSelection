@@ -4,12 +4,21 @@ package org.jfree.expdemo;
  * based on BarChartDemo1 
  */
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GradientPaint;
 import java.awt.Paint;
 
+import javax.swing.BorderFactory;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.JTable;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.TitledBorder;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumnModel;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
@@ -29,23 +38,46 @@ import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.chart.renderer.contribution.DefaultPaintIRS;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.category.DefaultCategoryDataset;
+import org.jfree.data.datasetextension.DatasetIterator;
 import org.jfree.data.datasetextension.DatasetSelectionExtension;
 import org.jfree.data.datasetextension.impl.CategoryCursor;
 import org.jfree.data.datasetextension.impl.CategoryDatasetSelectionExtension;
 import org.jfree.data.datasetextension.impl.DatasetExtensionManager;
+import org.jfree.data.event.SelectionChangeEvent;
+import org.jfree.data.event.SelectionChangeListener;
 import org.jfree.data.general.Dataset;
 import org.jfree.ui.ApplicationFrame;
 import org.jfree.ui.RefineryUtilities;
 
 
-public class SelectionDemo5Category extends ApplicationFrame{
+public class SelectionDemo5Category extends ApplicationFrame implements SelectionChangeListener {
 
-		
+	JTable table;
+
+	DefaultTableModel model;
+
+	CategoryDataset dataset;
+	
+	
 	    public SelectionDemo5Category(String title) {
 	        super(title);
 	        JPanel chartPanel = createDemoPanel();
 	        chartPanel.setPreferredSize(new Dimension(500, 270));
-	        setContentPane(chartPanel);
+	        
+			JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+			split.add(chartPanel);
+
+			this.model = new DefaultTableModel(new String[] { "row:", "column:",
+					"value:"}, 0);
+			this.table = new JTable(this.model);
+			TableColumnModel tcm = this.table.getColumnModel();
+			JPanel p = new JPanel(new BorderLayout());
+			JScrollPane scroller = new JScrollPane(this.table);
+			p.add(scroller);
+			p.setBorder(BorderFactory.createCompoundBorder(new TitledBorder(
+					"Selected Items: "), new EmptyBorder(4, 4, 4, 4)));
+			split.add(p);
+			setContentPane(split);
 	    }
 
 	    /**
@@ -144,9 +176,9 @@ public class SelectionDemo5Category extends ApplicationFrame{
 	    }
 
 
-	    public static JPanel createDemoPanel() {
-	    	final CategoryDataset data = createDataset();
-	        JFreeChart chart = createChart(data);
+	    public JPanel createDemoPanel() {
+	    	dataset = createDataset();
+	        JFreeChart chart = createChart(dataset);
 	        ChartPanel panel = new ChartPanel(chart);
 	        panel.setFillZoomRectangle(true);
 	        panel.setMouseWheelEnabled(true);
@@ -159,7 +191,8 @@ public class SelectionDemo5Category extends ApplicationFrame{
 	        
 	        //extend the dataset with selection storage
 	        DatasetExtensionManager dExManager = new DatasetExtensionManager();
-	        final DatasetSelectionExtension ext = new CategoryDatasetSelectionExtension(data, chart.getPlot()); 
+	        final DatasetSelectionExtension ext = new CategoryDatasetSelectionExtension(dataset, chart.getPlot());
+	        ext.addChangeListener(this);
 	        dExManager.registerDatasetExtension(ext);
 	                
 	        //extend the renderer
@@ -168,7 +201,7 @@ public class SelectionDemo5Category extends ApplicationFrame{
 	        
 	        renderer.setPaintIRS(new DefaultPaintIRS(renderer) {
 	        	public Paint getItemPaint(int row, int column) {
-	        		cursor.setPosition(data.getRowKey(row), data.getColumnKey(column));
+	        		cursor.setPosition(dataset.getRowKey(row), dataset.getColumnKey(column));
 	        		if (ext.isSelected(cursor)) {
 	        			return Color.white;
 	        		} else {
@@ -177,7 +210,7 @@ public class SelectionDemo5Category extends ApplicationFrame{
 	        	}
 	        });
 	        
-	        panel.setSelectionManager(new EntitySelectionManager(panel, new Dataset[]{data}, dExManager));
+	        panel.setSelectionManager(new EntitySelectionManager(panel, new Dataset[]{dataset}, dExManager));
 	        return panel;
 	    }
 
@@ -192,6 +225,20 @@ public class SelectionDemo5Category extends ApplicationFrame{
 	        demo.setVisible(true);
 
 	    }
+
+		public void selectionChanged(SelectionChangeEvent event) {
+	    	while (this.model.getRowCount() > 0) {
+	            this.model.removeRow(0);
+	        }
+
+	    	CategoryDatasetSelectionExtension ext = (CategoryDatasetSelectionExtension)event.getSelectionExtension(); 
+	    	DatasetIterator iter = ext.getSelectionIterator(true);
+	    	
+	    	while (iter.hasNext()) {
+	    		CategoryCursor dc = (CategoryCursor)iter.nextCursor();
+	    		this.model.addRow(new Object[] { dc.rowKey, dc.columnKey, dataset.getValue(dc.rowKey, dc.columnKey)});
+	    	}
+		}
 
 	}
 

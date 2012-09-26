@@ -4,19 +4,19 @@ import org.jfree.data.datasetextension.DatasetCursor;
 
 public class XYCursor implements DatasetCursor {
 
-	private int series;
-	private int item;
+	public int series;
+	public int item;
+
+	public XYCursor() {
+	}
 	
-	public void setPosition(int series, int item) {
+	public XYCursor(int series, int item) {
 		this.series = series;
 		this.item = item;
 	}
-	
-	public int getSeries() {
-		return this.series;
-	}
-	
-	public int getItem() {
-		return this.item;
+
+	public void setPosition(int series, int item) {
+		this.series = series;
+		this.item = item;
 	}
 }
