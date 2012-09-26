@@ -28,6 +28,7 @@ import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.panel.selectionhandler.EntitySelectionManager;
+import org.jfree.chart.panel.selectionhandler.MouseClickSelectionHandler;
 import org.jfree.chart.panel.selectionhandler.RectangularRegionSelectionHandler;
 import org.jfree.chart.panel.selectionhandler.RegionSelectionHandler;
 import org.jfree.chart.plot.PlotOrientation;
@@ -255,6 +256,7 @@ public class SelectionDemo4 extends ApplicationFrame {
         //extend the panel with a selection handler
         RegionSelectionHandler selectionHandler = new RectangularRegionSelectionHandler();
         panel.addMouseHandler(selectionHandler);
+        panel.addAuxiliaryMouseHandler(new MouseClickSelectionHandler());
         
         //extend the dataset with selection storage
         DatasetExtensionManager dExManager = new DatasetExtensionManager();

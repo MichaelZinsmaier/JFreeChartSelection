@@ -19,6 +19,7 @@ import org.jfree.chart.axis.CategoryLabelPositions;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.labels.StandardCategorySeriesLabelGenerator;
 import org.jfree.chart.panel.selectionhandler.EntitySelectionManager;
+import org.jfree.chart.panel.selectionhandler.MouseClickSelectionHandler;
 import org.jfree.chart.panel.selectionhandler.RectangularRegionSelectionHandler;
 import org.jfree.chart.panel.selectionhandler.RegionSelectionHandler;
 import org.jfree.chart.plot.CategoryPlot;
@@ -154,6 +155,7 @@ public class SelectionDemo5Category extends ApplicationFrame{
 	        //extend the panel with a selection handler
 	        RegionSelectionHandler selectionHandler = new RectangularRegionSelectionHandler();
 	        panel.addMouseHandler(selectionHandler);
+	        panel.addAuxiliaryMouseHandler(new MouseClickSelectionHandler());
 	        
 	        //extend the dataset with selection storage
 	        DatasetExtensionManager dExManager = new DatasetExtensionManager();

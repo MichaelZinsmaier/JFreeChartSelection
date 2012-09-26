@@ -12,6 +12,7 @@ import org.jfree.chart.event.ChartChangeListener;
 import org.jfree.chart.labels.StandardPieSectionLabelGenerator;
 import org.jfree.chart.panel.selectionhandler.EntitySelectionManager;
 import org.jfree.chart.panel.selectionhandler.FreeRegionSelectionHandler;
+import org.jfree.chart.panel.selectionhandler.MouseClickSelectionHandler;
 import org.jfree.chart.panel.selectionhandler.RegionSelectionHandler;
 import org.jfree.chart.plot.PiePlot;
 import org.jfree.data.datasetextension.DatasetSelectionExtension;
@@ -23,6 +24,7 @@ import org.jfree.data.general.DefaultPieDataset;
 import org.jfree.data.general.PieDataset;
 import org.jfree.ui.ApplicationFrame;
 import org.jfree.ui.RefineryUtilities;
+
 
 /*
  * based on PieChartDemo2
@@ -80,13 +82,13 @@ public class SelectionDemo6Pie extends ApplicationFrame {
 		final PieDataset data = createDataset();
 		JFreeChart chart = createChart(data);
 		ChartPanel panel = new ChartPanel(chart);
-		panel.setFillZoomRectangle(true);
 		panel.setMouseWheelEnabled(true);
 
 		// extend the panel with a selection handler
 		RegionSelectionHandler selectionHandler = new FreeRegionSelectionHandler();
 		panel.addMouseHandler(selectionHandler);
-
+		panel.addAuxiliaryMouseHandler(new MouseClickSelectionHandler());
+		
 		// extend the dataset with selection storage
 		final DatasetExtensionManager dExManager = new DatasetExtensionManager();
 		final DatasetSelectionExtension ext = new PieDatasetSelectionExtension(
