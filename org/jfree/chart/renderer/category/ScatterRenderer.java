@@ -60,6 +60,7 @@ import java.util.List;
 import org.jfree.chart.LegendItem;
 import org.jfree.chart.axis.CategoryAxis;
 import org.jfree.chart.axis.ValueAxis;
+import org.jfree.chart.entity.EntityCollection;
 import org.jfree.chart.event.RendererChangeEvent;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PlotOrientation;
@@ -388,7 +389,7 @@ public class ScatterRenderer extends AbstractCategoryItemRenderer
             Rectangle2D dataArea, CategoryPlot plot, CategoryAxis domainAxis,
             ValueAxis rangeAxis, CategoryDataset dataset, int row, int column,
             int pass) {
-
+    	
         // do nothing if item is not visible
         if (!getItemVisible(row, column)) {
             return;
@@ -450,8 +451,17 @@ public class ScatterRenderer extends AbstractCategoryItemRenderer
                 g2.setStroke(getItemOutlineStroke(row, column));
                 g2.draw(shape);
             }
+            
+    		// collecting the entity info
+    		if (state != null) {
+    			EntityCollection entities = state.getEntityCollection();
+    			if (orientation == PlotOrientation.HORIZONTAL) {
+    				addEntity(entities, shape, dataset, row, column, y1, x1);
+    			} else {
+    				addEntity(entities, shape, dataset, row, column, x1, y1);
+    			}
+        	}
         }
-
     }
 
     /**
