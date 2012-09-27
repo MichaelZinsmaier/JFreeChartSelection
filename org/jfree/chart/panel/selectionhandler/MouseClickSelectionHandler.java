@@ -6,8 +6,16 @@ import org.jfree.chart.ChartPanel;
 import org.jfree.chart.panel.AbstractMouseHandler;
 
 public class MouseClickSelectionHandler extends AbstractMouseHandler {
-	    	
-	    public void mouseClicked(MouseEvent e) {
+	    
+		public MouseClickSelectionHandler() {
+			super();
+		}
+	
+	    public MouseClickSelectionHandler(int modifier) {
+			super(modifier);
+	    }
+
+		public void mouseClicked(MouseEvent e) {
 	    	if (!(e.getSource() instanceof ChartPanel)) {
 				return;
 			}
@@ -23,6 +31,10 @@ public class MouseClickSelectionHandler extends AbstractMouseHandler {
 	    		panel.getChart().fireChartChanged();
 	    	}
 	    }
+
+		public boolean isLiveHandler() {
+			return false;
+		}
 
 	
 }

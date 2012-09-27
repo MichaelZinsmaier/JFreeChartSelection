@@ -77,6 +77,12 @@ public class CircularRegionSelectionHandler extends RegionSelectionHandler {
 		this.selectionCircle = null;
 		this.startPoint = null;
 	}
+	
+	public CircularRegionSelectionHandler(int modifier) {
+		super(modifier);
+		this.selectionCircle = null;
+		this.startPoint = null;
+	}
 
 	/**
 	 * Creates a new selection handler with the specified attributes.
@@ -127,10 +133,12 @@ public class CircularRegionSelectionHandler extends RegionSelectionHandler {
 	 *            the event.
 	 */
 	public void mouseDragged(MouseEvent e) {
+		ChartPanel panel = (ChartPanel) e.getSource();
+		
 		if (this.startPoint == null) {
+			panel.clearLiveMouseHandler();
 			return; // we never started a selection
 		}
-		ChartPanel panel = (ChartPanel) e.getSource();
 		Point pt = e.getPoint();
 		Point2D pt2 = ShapeUtilities.getPointInRectangle(pt.x, pt.y,
 				panel.getScreenDataArea());
@@ -178,10 +186,11 @@ public class CircularRegionSelectionHandler extends RegionSelectionHandler {
 	}
 
 	public void mouseReleased(MouseEvent e) {
+		ChartPanel panel = (ChartPanel) e.getSource();
 		if (this.startPoint == null) {
+			panel.clearLiveMouseHandler();
 			return; // we never started a selection
 		}
-		ChartPanel panel = (ChartPanel) e.getSource();
 		SelectionManager selectionManager = panel.getSelectionManager();
 
 		// do something with the selection shape

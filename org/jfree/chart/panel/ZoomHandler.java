@@ -59,8 +59,14 @@ public class ZoomHandler extends AbstractMouseHandler {
 
     private Rectangle2D zoomRectangle;
 
+    public ZoomHandler(int modifier) {
+        super(modifier);
+        zoomPoint = null;
+    }
+    
     public ZoomHandler() {
         super();
+        zoomPoint = null;
     }
 
     public void mousePressed(MouseEvent e) {
@@ -73,16 +79,20 @@ public class ZoomHandler extends AbstractMouseHandler {
         }
         else {
             this.zoomPoint = null;
+            chartPanel.clearLiveMouseHandler();
         }
     }
 
     public void mouseDragged(MouseEvent e) {
+        ChartPanel panel = (ChartPanel) e.getSource();
 
-        // if no initial zoom point was set, ignore dragging...
         if (this.zoomPoint == null) {
+    		//no initial zoom rectangle exists but the handler is set
+    		//as life handler unregister
+    		panel.clearLiveMouseHandler();
             return;
         }
-        ChartPanel panel = (ChartPanel) e.getSource();
+
         Graphics2D g2 = (Graphics2D) panel.getGraphics();
 
         // erase the previous zoom rectangle (if any).  We only need to do
@@ -139,11 +149,15 @@ public class ZoomHandler extends AbstractMouseHandler {
     }
 
     public void mouseReleased(MouseEvent e) {
-
-        if (this.zoomRectangle == null) {
+    	ChartPanel panel = (ChartPanel) e.getSource();
+        
+    	if (this.zoomRectangle == null) {
+    		//no initial zoom rectangle exists but the handler is set
+    		//as life handler unregister
+    		panel.clearLiveMouseHandler();
             return;
         }
-        ChartPanel panel = (ChartPanel) e.getSource();
+        
         boolean hZoom = false;
         boolean vZoom = false;
         if (panel.getOrientation() == PlotOrientation.HORIZONTAL) {
@@ -252,5 +266,9 @@ public class ZoomHandler extends AbstractMouseHandler {
             }
         }
     }
+
+	public boolean isLiveHandler() {
+		return true;
+	}
 
 }

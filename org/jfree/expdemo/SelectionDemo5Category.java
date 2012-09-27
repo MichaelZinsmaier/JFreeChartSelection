@@ -187,7 +187,7 @@ public class SelectionDemo5Category extends ApplicationFrame implements Selectio
 	        //extend the panel with a selection handler
 	        RegionSelectionHandler selectionHandler = new RectangularRegionSelectionHandler();
 	        panel.addMouseHandler(selectionHandler);
-	        panel.addAuxiliaryMouseHandler(new MouseClickSelectionHandler());
+	        panel.addMouseHandler(new MouseClickSelectionHandler());
 	        
 	        //extend the dataset with selection storage
 	        DatasetExtensionManager dExManager = new DatasetExtensionManager();

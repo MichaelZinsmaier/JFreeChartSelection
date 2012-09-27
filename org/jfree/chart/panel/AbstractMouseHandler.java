@@ -52,7 +52,7 @@ import org.jfree.chart.ChartPanel;
  *
  * @since 1.0.14
  */
-public class AbstractMouseHandler implements MouseListener,
+public abstract class AbstractMouseHandler implements MouseListener,
         MouseMotionListener {
 
     /** The modifier used to invoke this handler. */
@@ -63,6 +63,13 @@ public class AbstractMouseHandler implements MouseListener,
      */
     public AbstractMouseHandler() {
         this.modifier = 0;
+    }
+    
+    /**
+     * constructing with modifier
+     */
+    public AbstractMouseHandler(int modifier) {
+        this.modifier = modifier;
     }
 
     /**
@@ -153,4 +160,15 @@ public class AbstractMouseHandler implements MouseListener,
     	// override if you need this method to do something
     }
 
+
+    /**
+     * A mouse handler is either an live handler or an auxiliary handler. While their can be
+     * only one active live handler at a time many auxiliary handlers can be used together.
+     * E.g. rectangle zooming and rectangle selection should be implemented as live handlers because
+     * they both draw on the panel and shouldn't be combined. In contrast a click selection does not
+     * interfere with e.g. a double click selection both handlers can be active at the same time. 
+     * 
+     * @return true if this is a live handler
+     */
+    public abstract boolean isLiveHandler();
 }

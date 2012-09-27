@@ -524,7 +524,7 @@ public class ChartPanel extends JPanel implements ChartChangeListener,
 	 * 
 	 * @since 1.0.14
 	 */
-	private List availableMouseHandlers;
+	private List availableLiveMouseHandlers;
 
 	/**
 	 * The current "live" mouse handler. One of the handlers from the
@@ -771,10 +771,10 @@ public class ChartPanel extends JPanel implements ChartChangeListener,
 
 		this.overlays = new java.util.ArrayList();
 
-		this.availableMouseHandlers = new java.util.ArrayList();
+		this.availableLiveMouseHandlers = new java.util.ArrayList();
 
 		this.zoomHandler = new ZoomHandler();
-		this.availableMouseHandlers.add(zoomHandler);
+		this.availableLiveMouseHandlers.add(zoomHandler);
 
 		PanHandler panHandler = new PanHandler();
 		int panMask = InputEvent.CTRL_MASK;
@@ -785,7 +785,7 @@ public class ChartPanel extends JPanel implements ChartChangeListener,
 			panMask = InputEvent.ALT_MASK;
 		}
 		panHandler.setModifier(panMask);
-		this.availableMouseHandlers.add(panHandler);
+		this.availableLiveMouseHandlers.add(panHandler);
 		this.auxiliaryMouseHandlers = new java.util.ArrayList();
 	}
 
@@ -1876,11 +1876,19 @@ public class ChartPanel extends JPanel implements ChartChangeListener,
 		if (this.liveMouseHandler != null) {
 			this.liveMouseHandler.mouseEntered(e);
 		}
+
+		//handel auxiliary handlers
+		int mods = e.getModifiers();
 		Iterator iterator = this.auxiliaryMouseHandlers.iterator();
 		while (iterator.hasNext()) {
-			AbstractMouseHandler h = (AbstractMouseHandler) iterator.next();
-			h.mouseEntered(e);
+			AbstractMouseHandler handler = (AbstractMouseHandler) iterator
+					.next();
+			if (handler.getModifier() == 0 || 
+			   (mods & handler.getModifier()) == handler.getModifier()) {
+				handler.mouseEntered(e);
+			}
 		}
+
 	}
 
 	/**
@@ -1904,10 +1912,17 @@ public class ChartPanel extends JPanel implements ChartChangeListener,
 		if (this.liveMouseHandler != null) {
 			this.liveMouseHandler.mouseExited(e);
 		}
+
+		//handel auxiliary handlers
+		int mods = e.getModifiers();
 		Iterator iterator = this.auxiliaryMouseHandlers.iterator();
 		while (iterator.hasNext()) {
-			AbstractMouseHandler h = (AbstractMouseHandler) iterator.next();
-			h.mouseExited(e);
+			AbstractMouseHandler handler = (AbstractMouseHandler) iterator
+					.next();
+			if (handler.getModifier() == 0 || 
+			   (mods & handler.getModifier()) == handler.getModifier()) {
+				handler.mouseExited(e);
+			}
 		}
 	}
 
@@ -1935,7 +1950,7 @@ public class ChartPanel extends JPanel implements ChartChangeListener,
 		} else {
 			AbstractMouseHandler h = null;
 			boolean found = false;
-			Iterator iterator = this.availableMouseHandlers.iterator();
+			Iterator iterator = this.availableLiveMouseHandlers.iterator();
 			AbstractMouseHandler nomod = null;
 			while (iterator.hasNext() && !found) {
 				h = (AbstractMouseHandler) iterator.next();
@@ -1955,14 +1970,16 @@ public class ChartPanel extends JPanel implements ChartChangeListener,
 			}
 		}
 
-		// now process the auxiliary handlers
+		//handel auxiliary handlers
 		Iterator iterator = this.auxiliaryMouseHandlers.iterator();
 		while (iterator.hasNext()) {
 			AbstractMouseHandler handler = (AbstractMouseHandler) iterator
 					.next();
-			handler.mousePressed(e);
+			if (handler.getModifier() == 0 || 
+			   (mods & handler.getModifier()) == handler.getModifier()) {
+				handler.mousePressed(e);
+			}
 		}
-
 	}
 
 	/**
@@ -2001,14 +2018,17 @@ public class ChartPanel extends JPanel implements ChartChangeListener,
 			this.liveMouseHandler.mouseDragged(e);
 		}
 
-		// now process the auxiliary handlers
+		//handel auxiliary handlers
+		int mods = e.getModifiers();
 		Iterator iterator = this.auxiliaryMouseHandlers.iterator();
 		while (iterator.hasNext()) {
 			AbstractMouseHandler handler = (AbstractMouseHandler) iterator
 					.next();
-			handler.mouseDragged(e);
+			if (handler.getModifier() == 0 || 
+			   (mods & handler.getModifier()) == handler.getModifier()) {
+				handler.mouseDragged(e);
+			}
 		}
-
 	}
 
 	/**
@@ -2032,14 +2052,17 @@ public class ChartPanel extends JPanel implements ChartChangeListener,
 			this.liveMouseHandler.mouseReleased(e);
 		}
 
-		// now process the auxiliary handlers
+		//handel auxiliary handlers
+		int mods = e.getModifiers();
 		Iterator iterator = this.auxiliaryMouseHandlers.iterator();
 		while (iterator.hasNext()) {
 			AbstractMouseHandler handler = (AbstractMouseHandler) iterator
 					.next();
-			handler.mouseReleased(e);
+			if (handler.getModifier() == 0 || 
+			   (mods & handler.getModifier()) == handler.getModifier()) {
+				handler.mouseReleased(e);
+			}
 		}
-
 	}
 
 	/**
@@ -2049,11 +2072,11 @@ public class ChartPanel extends JPanel implements ChartChangeListener,
 	 * @param event
 	 *            Information about the mouse event.
 	 */
-	public void mouseClicked(MouseEvent event) {
+	public void mouseClicked(MouseEvent e) {
 
 		Insets insets = getInsets();
-		int x = (int) ((event.getX() - insets.left) / this.scaleX);
-		int y = (int) ((event.getY() - insets.top) / this.scaleY);
+		int x = (int) ((e.getX() - insets.left) / this.scaleX);
+		int y = (int) ((e.getY() - insets.top) / this.scaleY);
 
 		this.anchor = new Point2D.Double(x, y);
 		if (this.chart == null) {
@@ -2063,8 +2086,8 @@ public class ChartPanel extends JPanel implements ChartChangeListener,
 		// new entity code...
 		Object[] listeners = this.chartMouseListeners
 				.getListeners(ChartMouseListener.class);
-		if (listeners.length >= 0) {
-			//handel old listeners
+		if (listeners.length > 0) {
+			// handel old listeners
 			ChartEntity entity = null;
 			if (this.info != null) {
 				EntityCollection entities = this.info.getEntityCollection();
@@ -2072,7 +2095,7 @@ public class ChartPanel extends JPanel implements ChartChangeListener,
 					entity = entities.getEntity(x, y);
 				}
 			}
-			ChartMouseEvent chartEvent = new ChartMouseEvent(getChart(), event,
+			ChartMouseEvent chartEvent = new ChartMouseEvent(getChart(), e,
 					entity);
 			for (int i = listeners.length - 1; i >= 0; i -= 1) {
 				((ChartMouseListener) listeners[i])
@@ -2084,15 +2107,19 @@ public class ChartPanel extends JPanel implements ChartChangeListener,
 		// handle new mouse handler based listeners
 
 		if (this.liveMouseHandler != null) {
-			this.liveMouseHandler.mouseClicked(event);
+			this.liveMouseHandler.mouseClicked(e);
 		}
 
-		// now process the auxiliary handlers
+		//handel auxiliary handlers
+		int mods = e.getModifiers();
 		Iterator iterator = this.auxiliaryMouseHandlers.iterator();
 		while (iterator.hasNext()) {
 			AbstractMouseHandler handler = (AbstractMouseHandler) iterator
 					.next();
-			handler.mouseClicked(event);
+			if (handler.getModifier() == 0 || 
+			   (mods & handler.getModifier()) == handler.getModifier()) {
+				handler.mouseClicked(e);
+			}
 		}
 	}
 
@@ -2114,32 +2141,53 @@ public class ChartPanel extends JPanel implements ChartChangeListener,
 
 		Object[] listeners = this.chartMouseListeners
 				.getListeners(ChartMouseListener.class);
-		if (listeners.length == 0) {
-			return;
-		}
-		Insets insets = getInsets();
-		int x = (int) ((e.getX() - insets.left) / this.scaleX);
-		int y = (int) ((e.getY() - insets.top) / this.scaleY);
+		if (listeners.length > 0) {
 
-		ChartEntity entity = null;
-		if (this.info != null) {
-			EntityCollection entities = this.info.getEntityCollection();
-			if (entities != null) {
-				entity = entities.getEntity(x, y);
+			Insets insets = getInsets();
+			int x = (int) ((e.getX() - insets.left) / this.scaleX);
+			int y = (int) ((e.getY() - insets.top) / this.scaleY);
+
+			ChartEntity entity = null;
+			if (this.info != null) {
+				EntityCollection entities = this.info.getEntityCollection();
+				if (entities != null) {
+					entity = entities.getEntity(x, y);
+				}
+			}
+
+			// we can only generate events if the panel's chart is not null
+			// (see bug report 1556951)
+			if (this.chart != null) {
+				ChartMouseEvent event = new ChartMouseEvent(getChart(), e,
+						entity);
+				for (int i = listeners.length - 1; i >= 0; i -= 1) {
+					((ChartMouseListener) listeners[i]).chartMouseMoved(event);
+				}
 			}
 		}
 
-		// we can only generate events if the panel's chart is not null
-		// (see bug report 1556951)
+		// handle new mouse handler based listeners
+
 		if (this.chart != null) {
-			ChartMouseEvent event = new ChartMouseEvent(getChart(), e, entity);
-			for (int i = listeners.length - 1; i >= 0; i -= 1) {
-				((ChartMouseListener) listeners[i]).chartMouseMoved(event);
+
+			if (this.liveMouseHandler != null) {
+				this.liveMouseHandler.mouseMoved(e);
+			}
+
+			//handel auxiliary handlers
+			int mods = e.getModifiers();
+			Iterator iterator = this.auxiliaryMouseHandlers.iterator();
+			while (iterator.hasNext()) {
+				AbstractMouseHandler handler = (AbstractMouseHandler) iterator
+						.next();
+				if (handler.getModifier() == 0 || 
+				   (mods & handler.getModifier()) == handler.getModifier()) {
+					handler.mouseMoved(e);
+				}
 			}
 		}
-
 	}
-
+	
 	/**
 	 * Zooms in on an anchor point (specified in screen coordinate space).
 	 * 
@@ -3167,13 +3215,13 @@ public class ChartPanel extends JPanel implements ChartChangeListener,
 	 * @since 1.0.14
 	 */
 	public void addMouseHandler(AbstractMouseHandler handler) {
-		this.availableMouseHandlers.add(handler);
+		if (handler.isLiveHandler()) {
+			this.availableLiveMouseHandlers.add(handler);
+		} else {
+			this.auxiliaryMouseHandlers.add(handler);
+		}
 	}
 
-	public void addAuxiliaryMouseHandler(AbstractMouseHandler handler) {
-		this.auxiliaryMouseHandlers.add(handler);
-	}
-	
 	/**
 	 * Removes a mouse handler.
 	 * 
@@ -3187,11 +3235,11 @@ public class ChartPanel extends JPanel implements ChartChangeListener,
 	 * @since 1.0.14
 	 */
 	public boolean removeMouseHandler(AbstractMouseHandler handler) {
-		return this.availableMouseHandlers.remove(handler);
-	}
-	
-	public void removeAuxiliaryMouseHandler(AbstractMouseHandler handler) {
-		this.auxiliaryMouseHandlers.remove(handler);
+		if (handler.isLiveHandler()) {
+			return this.availableLiveMouseHandlers.remove(handler);
+		} else {
+			return this.auxiliaryMouseHandlers.remove(handler);
+		}		
 	}
 
 	/**

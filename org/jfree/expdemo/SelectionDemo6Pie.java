@@ -2,6 +2,7 @@ package org.jfree.expdemo;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.event.InputEvent;
 
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
@@ -17,6 +18,7 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.labels.StandardPieSectionLabelGenerator;
+import org.jfree.chart.panel.AbstractMouseHandler;
 import org.jfree.chart.panel.selectionhandler.EntitySelectionManager;
 import org.jfree.chart.panel.selectionhandler.FreeRegionSelectionHandler;
 import org.jfree.chart.panel.selectionhandler.MouseClickSelectionHandler;
@@ -115,7 +117,9 @@ public class SelectionDemo6Pie extends ApplicationFrame implements SelectionChan
 		// extend the panel with a selection handler
 		RegionSelectionHandler selectionHandler = new FreeRegionSelectionHandler();
 		panel.addMouseHandler(selectionHandler);
-		panel.addAuxiliaryMouseHandler(new MouseClickSelectionHandler());
+		AbstractMouseHandler clickHandler = new MouseClickSelectionHandler(InputEvent.SHIFT_MASK);
+		
+		panel.addMouseHandler(clickHandler);
 		
 		// extend the dataset with selection storage
 		final DatasetExtensionManager dExManager = new DatasetExtensionManager();

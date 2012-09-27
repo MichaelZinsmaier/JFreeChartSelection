@@ -77,6 +77,12 @@ public class FreeRegionSelectionHandler extends RegionSelectionHandler {
 		this.lastPoint = null;
 	}
 
+	public FreeRegionSelectionHandler(int modifier) {
+		super(modifier);
+		this.selectionPath = new GeneralPath();
+		this.lastPoint = null;
+	}
+
 	/**
 	 * Creates a new selection handler with the specified attributes.
 	 * 
@@ -126,10 +132,11 @@ public class FreeRegionSelectionHandler extends RegionSelectionHandler {
 	 *            the event.
 	 */
 	public void mouseDragged(MouseEvent e) {
+		ChartPanel panel = (ChartPanel) e.getSource();
 		if (this.lastPoint == null) {
+			panel.clearLiveMouseHandler();
 			return; // we never started a selection
 		}
-		ChartPanel panel = (ChartPanel) e.getSource();
 		Point pt = e.getPoint();
 		Point2D pt2 = ShapeUtilities.getPointInRectangle(pt.x, pt.y,
 				panel.getScreenDataArea());
@@ -144,10 +151,11 @@ public class FreeRegionSelectionHandler extends RegionSelectionHandler {
 	}
 
 	public void mouseReleased(MouseEvent e) {
+		ChartPanel panel = (ChartPanel) e.getSource();
 		if (this.lastPoint == null) {
+			panel.clearLiveMouseHandler();
 			return; // we never started a selection
 		}
-		ChartPanel panel = (ChartPanel) e.getSource();
 		this.selectionPath.closePath();
 		SelectionManager selectionManager = panel.getSelectionManager();
 

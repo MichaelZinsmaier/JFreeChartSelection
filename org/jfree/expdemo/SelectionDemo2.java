@@ -192,7 +192,7 @@ public class SelectionDemo2 extends ApplicationFrame implements SelectionChangeL
         //extend the panel with a selection handler
         RegionSelectionHandler selectionHandler = new CircularRegionSelectionHandler();
         panel.addMouseHandler(selectionHandler);
-        panel.addAuxiliaryMouseHandler(new MouseClickSelectionHandler());
+        panel.addMouseHandler(new MouseClickSelectionHandler());
         
         //extend the dataset with selection storage
         DatasetExtensionManager dExManager = new DatasetExtensionManager();

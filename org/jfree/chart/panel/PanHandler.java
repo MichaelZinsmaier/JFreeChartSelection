@@ -58,6 +58,8 @@ import org.jfree.chart.plot.PlotRenderingInfo;
  */
 public class PanHandler extends AbstractMouseHandler {
 
+
+	
     /**
      * Temporary storage for the width and height of the chart
      * drawing area during panning.
@@ -67,7 +69,13 @@ public class PanHandler extends AbstractMouseHandler {
     /** The last mouse position during panning. */
     private Point panLast;
 
+    public PanHandler(int modifier) {
+		super(modifier);
+		this.panLast = null;
+    }
+    
     public PanHandler() {
+    	super();
         this.panLast = null;
     }
 
@@ -75,7 +83,8 @@ public class PanHandler extends AbstractMouseHandler {
         ChartPanel panel = (ChartPanel) e.getSource();
         Plot plot = panel.getChart().getPlot();
         if (!(plot instanceof Pannable)) {
-            return;  // there's nothing for us to do
+        	panel.clearLiveMouseHandler();
+            return;  // there's nothing for us to do (except unregistering)
         }
         Pannable pannable = (Pannable) plot;
         if (pannable.isDomainPannable() || pannable.isRangePannable()) {
@@ -93,11 +102,14 @@ public class PanHandler extends AbstractMouseHandler {
     }
 
     public void mouseDragged(MouseEvent e) {
-        // handle panning if we have a start point
+        ChartPanel panel = (ChartPanel) e.getSource();
+
         if (this.panLast == null) {
+        	//handle panning if we have a start point else unregister
+            panel.clearLiveMouseHandler();
             return;
         }
-        ChartPanel panel = (ChartPanel) e.getSource();
+
         JFreeChart chart = panel.getChart();
         double dx = e.getX() - this.panLast.getX();
         double dy = e.getY() - this.panLast.getY();
@@ -124,14 +136,18 @@ public class PanHandler extends AbstractMouseHandler {
     }
 
     public void mouseReleased(MouseEvent e) {
-        // if we've been panning, we need to reset now that the mouse is
-        // released...
+        ChartPanel panel = (ChartPanel) e.getSource();
+        //if we have been panning reset the cursor
+        //unregister in any case
         if (this.panLast != null) {
-            ChartPanel panel = (ChartPanel) e.getSource();
-            this.panLast = null;
             panel.setCursor(Cursor.getDefaultCursor());
-            panel.clearLiveMouseHandler();
         }
+        this.panLast = null;
+        panel.clearLiveMouseHandler();
     }
+
+	public boolean isLiveHandler() {
+		return true;
+	}
 
 }

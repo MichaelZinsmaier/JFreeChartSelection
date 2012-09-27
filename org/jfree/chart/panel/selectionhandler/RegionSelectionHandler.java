@@ -55,7 +55,10 @@ import org.jfree.chart.panel.AbstractMouseHandler;
  */
 public abstract class RegionSelectionHandler extends AbstractMouseHandler {
 
-
+    public RegionSelectionHandler(int modifier) {
+		super(modifier);
+    }
+	
     /**
      * The outline stroke.
      */
@@ -146,4 +149,8 @@ public abstract class RegionSelectionHandler extends AbstractMouseHandler {
     public abstract void mouseDragged(MouseEvent e);
     
     public abstract void mouseReleased(MouseEvent e);
+    
+    public boolean isLiveHandler() {
+    	return true;
+    }
 }
