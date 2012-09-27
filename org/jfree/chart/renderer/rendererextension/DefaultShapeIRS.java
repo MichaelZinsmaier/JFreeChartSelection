@@ -1,4 +1,4 @@
-package org.jfree.chart.renderer.contribution;
+package org.jfree.chart.renderer.rendererextension;
 
 import java.awt.Shape;
 

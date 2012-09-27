@@ -1,4 +1,4 @@
-package org.jfree.chart.renderer.contribution;
+package org.jfree.chart.renderer.rendererextension;
 
 public interface VisibilityIRS {
 
