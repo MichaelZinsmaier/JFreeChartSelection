@@ -43,11 +43,11 @@ import org.jfree.ui.RefineryUtilities;
  */
 public class SelectionDemo6Pie extends ApplicationFrame implements SelectionChangeListener {
 
-	JTable table;
+	private JTable table;
 
-	DefaultTableModel model;
+	private DefaultTableModel model;
 
-	PieDataset dataset;
+	private PieDataset dataset;
 
 	
 	public SelectionDemo6Pie(String title) {
@@ -81,13 +81,14 @@ public class SelectionDemo6Pie extends ApplicationFrame implements SelectionChan
 		return dataset;
 	}
 
-	private static JFreeChart createChart(PieDataset dataset) {
-		JFreeChart chart = ChartFactory.createPieChart("Pie Chart Demo 2", // chart
-																			// title
+	private static JFreeChart createChart(final PieDataset dataset, DatasetSelectionExtension ext) {
+		JFreeChart chart = ChartFactory.createPieChart(
+				"Pie Chart Demo 2", // chart title
 				dataset, // dataset
 				true, // include legend
 				true, false);
-		PiePlot plot = (PiePlot) chart.getPlot();
+		
+		final PiePlot plot = (PiePlot) chart.getPlot();
 		plot.setSectionPaint("One", new Color(160, 160, 255));
 		plot.setSectionPaint("Two", new Color(128, 128, 255 - 32));
 		plot.setSectionPaint("Three", new Color(96, 96, 255 - 64));
@@ -105,49 +106,50 @@ public class SelectionDemo6Pie extends ApplicationFrame implements SelectionChan
 				"Tooltip for legend item {0}"));
 		plot.setSimpleLabels(true);
 		plot.setInteriorGap(0.1);
-		return chart;
-	}
-
-	public JPanel createDemoPanel() {
-		dataset = createDataset();
-		JFreeChart chart = createChart(dataset);
-		ChartPanel panel = new ChartPanel(chart);
-		panel.setMouseWheelEnabled(true);
-
-		// extend the panel with a selection handler
-		RegionSelectionHandler selectionHandler = new FreeRegionSelectionHandler();
-		panel.addMouseHandler(selectionHandler);
-		AbstractMouseHandler clickHandler = new MouseClickSelectionHandler(InputEvent.SHIFT_MASK);
-		
-		panel.addMouseHandler(clickHandler);
-		
-		// extend the dataset with selection storage
-		final DatasetExtensionManager dExManager = new DatasetExtensionManager();
-		final DatasetSelectionExtension ext = new PieDatasetSelectionExtension(
-				dataset);
-		ext.addChangeListener(this);
-		dExManager.registerDatasetExtension(ext);
-
-		// extend the plot
+				
+		//pie plots done use abstract renderers need to react to selection on our own
 		final PieCursor cursor = new PieCursor();
-		final PiePlot p = (PiePlot) chart.getPlot();
 
 		ext.addChangeListener(new SelectionChangeListener() {
 			public void selectionChanged(SelectionChangeEvent event) {				
 				for (int i = 0; i < dataset.getItemCount(); i++) {
 					cursor.setPosition(dataset.getKey(i));
 					if (event.getSelectionExtension().isSelected(cursor)) {
-						p.setExplodePercent(cursor.key, 0.15);
+						plot.setExplodePercent(cursor.key, 0.15);
 					} else {
-						p.setExplodePercent(cursor.key, 0.0);
+						plot.setExplodePercent(cursor.key, 0.0);
 					}
 				}
-				
 			}
 		});
+
 		
-		panel.setSelectionManager(new EntitySelectionManager(panel,
-				new Dataset[] { dataset }, dExManager));
+		return chart;
+	}
+
+	public JPanel createDemoPanel() {
+		this.dataset = createDataset();
+		//extend dataset and add selection change listener for the demo
+		DatasetSelectionExtension datasetExtension = new PieDatasetSelectionExtension(this.dataset);
+		datasetExtension.addChangeListener(this);
+		
+		//standard setup
+		JFreeChart chart = createChart(this.dataset, datasetExtension);
+		ChartPanel panel = new ChartPanel(chart);
+		panel.setMouseWheelEnabled(true);
+
+		//add a selection handler with shift modifier for clicking
+		RegionSelectionHandler selectionHandler = new FreeRegionSelectionHandler();
+		AbstractMouseHandler clickHandler = new MouseClickSelectionHandler(InputEvent.SHIFT_MASK);
+		panel.addMouseHandler(selectionHandler);
+		panel.addMouseHandler(clickHandler);
+		panel.removeMouseHandler(panel.getZoomHandler());
+
+		// add a selection manager
+		DatasetExtensionManager dExManager = new DatasetExtensionManager();
+		dExManager.registerDatasetExtension(datasetExtension);		
+		panel.setSelectionManager(new EntitySelectionManager(panel,	new Dataset[] { dataset }, dExManager));
+		
 		return panel;
 	}
 	
@@ -161,7 +163,7 @@ public class SelectionDemo6Pie extends ApplicationFrame implements SelectionChan
     	
     	while (iter.hasNext()) {
     		PieCursor dc = (PieCursor)iter.nextCursor();
-    		this.model.addRow(new Object[] {dc.key, dataset.getValue(dc.key)});
+    		this.model.addRow(new Object[] {dc.key, this.dataset.getValue(dc.key)});
     	}
 	}
 
