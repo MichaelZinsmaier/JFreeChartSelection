@@ -1,5 +1,6 @@
 package org.jfree.chart.panel.selectionhandler;
 
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Area;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Point2D;
@@ -57,6 +58,14 @@ public class EntitySelectionManager implements SelectionManager {
 
 	public void select(double x, double y) {
 
+		//scale if necessary
+		double scaleX = this.renderSourcePanel.getScaleX(); 
+		double scaleY = this.renderSourcePanel.getScaleY();		
+		if (scaleX != 1.0d || scaleY != 1.0d) {
+			x = x / scaleX;
+			y = y / scaleY;
+		} 
+		
 		if (this.renderSourcePanel.getChartRenderingInfo() != null) {
 			EntityCollection entities = this.renderSourcePanel
 					.getChartRenderingInfo().getEntityCollection();
@@ -78,9 +87,21 @@ public class EntitySelectionManager implements SelectionManager {
 		}
 	}
 
-	public void select(Rectangle2D selection) {
-
-		if (this.renderSourcePanel.getChartRenderingInfo() != null) {
+	public void select(Rectangle2D pSelection) {
+		//scale if necessary
+		Rectangle2D selection;
+		double scaleX = this.renderSourcePanel.getScaleX(); 
+		double scaleY = this.renderSourcePanel.getScaleY();		
+		if (scaleX != 1.0d || scaleY != 1.0d) {
+			AffineTransform st = AffineTransform.getScaleInstance(1.0 / scaleX, 1.0 / scaleY);
+			Area selectionArea = new Area(pSelection);
+			selectionArea.transform(st);
+			selection = selectionArea.getBounds2D();
+		}  else {
+			selection = pSelection;
+		}
+		
+		if (this.renderSourcePanel.getChartRenderingInfo() != null) {			
 			muteAll();
 			{
 
@@ -131,8 +152,20 @@ public class EntitySelectionManager implements SelectionManager {
 		}
 	}
 
-	public void select(GeneralPath selection) {
-
+	public void select(GeneralPath pSelection) {
+		//scale if necessary
+		GeneralPath selection;
+		double scaleX = this.renderSourcePanel.getScaleX(); 
+		double scaleY = this.renderSourcePanel.getScaleY();		
+		if (scaleX != 1.0d || scaleY != 1.0d) {
+			AffineTransform st = AffineTransform.getScaleInstance(1.0 / scaleX, 1.0 / scaleY);
+			Area selectionArea = new Area(pSelection);
+			selectionArea.transform(st);
+			selection = new GeneralPath(selectionArea);
+		}  else {
+			selection = pSelection;
+		}
+				
 		if (this.renderSourcePanel.getChartRenderingInfo() != null) {
 			muteAll();
 			{
@@ -182,7 +215,8 @@ public class EntitySelectionManager implements SelectionManager {
 			}
 		}
 	}
-
+	
+	
 	private void select(DataItemEntity e) {
 		// to support propper clear functionality we must maintain
 		// all datasets that we change!
