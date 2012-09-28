@@ -3212,7 +3212,7 @@ public class ChartPanel extends JPanel implements ChartChangeListener,
 	 * 
 	 * @see #removeMouseHandler(org.jfree.chart.panel.AbstractMouseHandler)
 	 * 
-	 * @since 1.0.14
+	 * @since 
 	 */
 	public void addMouseHandler(AbstractMouseHandler handler) {
 		if (handler.isLiveHandler()) {
@@ -3232,7 +3232,7 @@ public class ChartPanel extends JPanel implements ChartChangeListener,
 	 * 
 	 * @see #addMouseHandler(org.jfree.chart.panel.AbstractMouseHandler)
 	 * 
-	 * @since 1.0.14
+	 * @since 
 	 */
 	public boolean removeMouseHandler(AbstractMouseHandler handler) {
 		if (handler.isLiveHandler()) {
@@ -3246,7 +3246,7 @@ public class ChartPanel extends JPanel implements ChartChangeListener,
 	 * Clears the 'liveMouseHandler' field. Each handler is responsible for
 	 * calling this method when they have finished handling mouse events.
 	 * 
-	 * @since 1.0.14
+	 * @since 
 	 */
 	public void clearLiveMouseHandler() {
 		this.liveMouseHandler = null;
@@ -3255,7 +3255,7 @@ public class ChartPanel extends JPanel implements ChartChangeListener,
 	/**
 	 * The selection shape (may be <code>null</code>).
 	 * 
-	 * @since 1.0.14
+	 * @since
 	 */
 	private Shape selectionShape;
 
@@ -3266,7 +3266,7 @@ public class ChartPanel extends JPanel implements ChartChangeListener,
 	 * 
 	 * @see #setSelectionShape(java.awt.Shape)
 	 * 
-	 * @since 1.0.14
+	 * @since 
 	 */
 	public Shape getSelectionShape() {
 		return this.selectionShape;
@@ -3280,7 +3280,7 @@ public class ChartPanel extends JPanel implements ChartChangeListener,
 	 * 
 	 * @see #getSelectionShape()
 	 * 
-	 * @since 1.0.14
+	 * @since 
 	 */
 	public void setSelectionShape(Shape shape) {
 		this.selectionShape = shape;
@@ -3289,12 +3289,22 @@ public class ChartPanel extends JPanel implements ChartChangeListener,
 	/**
 	 * The selection fill paint (may be <code>null</code>).
 	 * 
-	 * @since 1.0.14
+	 * @since 
 	 */
 	private Paint selectionFillPaint;
 
+	/**
+	 * The selection outline paint
+	 * 
+	 * @since 
+	 */
 	private Paint selectionOutlinePaint = Color.darkGray;
 
+	/**
+	 * The selection outline stroke
+	 * 
+	 * @since 
+	 */
 	private Stroke selectionOutlineStroke = new BasicStroke(1.0f,
 			BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 4.0f, new float[] {
 					3.0f, 3.0f }, 0.0f);
@@ -3306,7 +3316,7 @@ public class ChartPanel extends JPanel implements ChartChangeListener,
 	 * 
 	 * @see #setSelectionFillPaint(java.awt.Paint)
 	 * 
-	 * @since 1.0.14
+	 * @since 
 	 */
 	public Paint getSelectionFillPaint() {
 		return this.selectionFillPaint;
@@ -3320,16 +3330,38 @@ public class ChartPanel extends JPanel implements ChartChangeListener,
 	 * 
 	 * @see #getSelectionFillPaint()
 	 * 
-	 * @since 1.0.14
+	 * @since 
 	 */
 	public void setSelectionFillPaint(Paint paint) {
 		this.selectionFillPaint = paint;
 	}
 
+
+	/**
+	 * Sets the selection outline paint.
+	 * 
+	 * @param paint
+	 *            the paint (<code>null</code> permitted).
+	 * 
+	 * @see #getSelectionOutlinePaint()
+	 * 
+	 * @since 
+	 */
 	public void setSelectionOutlinePaint(Paint paint) {
 		this.selectionOutlinePaint = paint;
 	}
 
+
+	/**
+	 * Sets the selection outline stroke
+	 * 
+	 * @param stroke
+	 *            the paint (<code>null</code> permitted).
+	 * 
+	 * @see #getSelectionOutlineStroke()
+	 * 
+	 * @since 
+	 */
 	public void setSelectionOutlineStroke(Stroke stroke) {
 		this.selectionOutlineStroke = stroke;
 	}
@@ -3362,14 +3394,31 @@ public class ChartPanel extends JPanel implements ChartChangeListener,
 	 */
 	private List selectionStates = new java.util.ArrayList();
 
+	/**
+	 * @return the zoom handler that is installed per default on each chart panel
+	 */
 	public ZoomHandler getZoomHandler() {
 		return this.zoomHandler;
 	}
 
+	/**
+	 * Returns a selectin manager that can be used for point or area selection. 
+	 * (e.g. {@link org.jfree.chart.panel.selectionhandler.RegionSelectionHandler RegionSelectionHandlers})
+	 * 
+	 * @return the selection manager that has been set via setSelectionManager or null
+	 */
 	public SelectionManager getSelectionManager() {
 		return this.selectionManager;
 	}
 
+	/**
+	 * Sets the selection manager of the ChartPanel. The manager can be retrieved via
+	 * the getSelectionManager method to be used for point or area selection. 
+	 * 
+	 * (e.g. {@link org.jfree.chart.panel.selectionhandler.RegionSelectionHandler RegionSelectionHandlers})
+	 * 
+	 * @param manager
+	 */
 	public void setSelectionManager(SelectionManager manager) {
 		this.selectionManager = manager;
 	}

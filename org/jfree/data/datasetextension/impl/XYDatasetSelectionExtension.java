@@ -1,23 +1,40 @@
 package org.jfree.data.datasetextension.impl;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.jfree.data.datasetextension.DatasetCursor;
+import org.jfree.data.datasetextension.DatasetExtension;
 import org.jfree.data.datasetextension.DatasetIterator;
+import org.jfree.data.datasetextension.DatasetSelectionExtension;
 import org.jfree.data.datasetextension.optional.IterableSelection;
 import org.jfree.data.event.SelectionChangeListener;
 import org.jfree.data.general.Dataset;
 import org.jfree.data.xy.XYDataset;
 
-//TODO incomplete implementation missing handler for dataset changes ...
-
+/**
+ * Extends a xy dataset with a selection state for each data item. 
+ * @author zinsmaie
+ *
+ */
 public class XYDatasetSelectionExtension extends
 		AbstractDatasetSelectionExtension implements IterableSelection {
 
+	/** a generated serial id */
+	private static final long serialVersionUID = 4859712483757720877L;
+	
+	/** reference to the extended dataset */
 	private final XYDataset dataset;
+	
+	/** storage for the selection attributes of the data items. */
 	private List[] selectionData;
 
+	
+	/**
+	 * Creates a separate selection extension for the specified dataset.
+	 * @param dataset
+	 */
 	public XYDatasetSelectionExtension(XYDataset dataset) {
 		this.dataset = dataset;
 		selectionData = new ArrayList[dataset.getSeriesCount()];
@@ -25,16 +42,29 @@ public class XYDatasetSelectionExtension extends
 		initSelection();
 	}
 
+	/**
+	 * Creates a separate selection extension for the specified dataset. And adds an initial
+	 * selection change listener, e.g. a plot that should be redrawn on selection changes.
+	 * 
+	 * @param dataset
+	 * @param initialListener
+	 */
 	public XYDatasetSelectionExtension(XYDataset dataset,
 			SelectionChangeListener initialListener) {
 		this(dataset);
 		addChangeListener(initialListener);
 	}
 
+	/**
+	 * {@link DatasetExtension#getDataset()} 
+	 */
 	public Dataset getDataset() {
 		return this.dataset;
 	}
 
+	/**
+	 * {@link DatasetSelectionExtension#isSelected(DatasetCursor)}
+	 */
 	public boolean isSelected(DatasetCursor cursor) {
 		if (cursor instanceof XYCursor) {
 			// anything else is an implementation error
@@ -50,6 +80,9 @@ public class XYDatasetSelectionExtension extends
 		return false;
 	}
 
+	/**
+	 * {@link DatasetSelectionExtension#setSelected(DatasetCursor, boolean)}
+	 */
 	public void setSelected(DatasetCursor cursor, boolean selected) {
 		if (cursor instanceof XYCursor) {
 			// anything else is an implementation error
@@ -59,10 +92,16 @@ public class XYDatasetSelectionExtension extends
 		}
 	}
 
+	/**
+	 * {@link DatasetSelectionExtension#clearSelection()}
+	 */
 	public void clearSelection() {
 		initSelection();
 	}
 
+	/**
+	 * inits the selection attribute storage and sets all data items to unselected
+	 */
 	private void initSelection() {
 		for (int i = 0; i < dataset.getSeriesCount(); i++) {
 			selectionData[i] = new ArrayList(dataset.getItemCount(i));
@@ -75,49 +114,96 @@ public class XYDatasetSelectionExtension extends
 
 	// ITERATOR IMPLEMENTATION
 
+	/**
+	 * {@link IterableSelection#getIterator()}
+	 */
 	public DatasetIterator getIterator() {
 		return new XYDatasetSelectionIterator();
 	}
 
+	/**
+	 * {@link IterableSelection#getSelectionIterator(boolean)}
+	 */
 	public DatasetIterator getSelectionIterator(boolean selected) {
 		return new XYDatasetSelectionIterator(selected);
 	}
+	
+	
 
+	/**
+	 * Allows to iterate over all data items or the selected / unselected data items.
+	 * Provides on each iteration step a DatasetCursor that defines the position of the data item.
+	 * 
+	 * @author zinsmaie
+	 */
 	private class XYDatasetSelectionIterator implements DatasetIterator {
+		
+		//could be improved wtr speed by storing selected elements directly for faster access
+		//however storage efficiency would decrease
+		
+		/** a generated serial id */
+		private static final long serialVersionUID = 125607273863837608L;
+		
+		/** current series position */
 		private int series = 0;
+		/** current item position initialized before the start of the dataset */
 		private int item = -1;
+		/** return all data item positions (null), only the selected (true) or only the unselected (false) */
 		private Boolean filter = null;
 
+		/**
+		 * creates an iterator over all data item positions
+		 */
 		public XYDatasetSelectionIterator() {
 		}
 
+		/** creates an iterator that iterates either over all selected or all unselected data item positions.
+		 * 
+		 * @param selected if true the iterator will iterate over the selected data item positions
+		 */
 		public XYDatasetSelectionIterator(boolean selected) {
 			this.filter = new Boolean(selected);
 		}
 
+		/** {@link Iterator#hasNext() */
 		public boolean hasNext() {
-			if (nextPosition(this.series, this.item)[0] != -1) {
+			if (nextPosition()[0] != -1) {
 				return true;
 			}
 			return false;
 		}
 
+		/**
+		 * {@link Iterator#next()}
+		 */
 		public Object next() {
-			int[] newPos = nextPosition(this.series, this.item);
+			int[] newPos = nextPosition();
 			this.series = newPos[0];
 			this.item = newPos[1];
 			return new XYCursor(this.series, this.item);
 		}
 
+		/** {@link DatasetIteratr#nextCursor()} */
 		public DatasetCursor nextCursor() {
 			return (DatasetCursor) next();
 		}
 
+		/**
+		 * iterator remove operation is not supported
+		 */
 		public void remove() {
 			throw new UnsupportedOperationException();
 		}
 
-		private int[] nextPosition(int pSeries, int pItem) {
+		/**
+		 * calculates the next position based on the current position
+		 * and the filter status.
+		 * @return an array holding the next position [series, item] 
+		 */
+		private int[] nextPosition() {
+			int pSeries = this.series;
+			int pItem = this.item;
+			
 			while (pSeries < selectionData.length) {
 				if ((pItem+1) >= selectionData[pSeries].size()) {
 					pSeries++;

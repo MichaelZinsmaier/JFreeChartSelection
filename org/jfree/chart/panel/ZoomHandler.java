@@ -267,6 +267,10 @@ public class ZoomHandler extends AbstractMouseHandler {
         }
     }
 
+
+    /**
+     * @see AbstractMouseHandler#isLiveHandler()
+     */
 	public boolean isLiveHandler() {
 		return true;
 	}

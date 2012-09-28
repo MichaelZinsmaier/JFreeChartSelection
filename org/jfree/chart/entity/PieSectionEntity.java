@@ -119,6 +119,9 @@ public class PieSectionEntity extends DataItemEntity
         return this.dataset;
     }
     
+    /**
+     * @see DataItemEntity#getGeneralDataset() 
+     */
     public Dataset getGeneralDataset() {
     	return this.dataset;
     }

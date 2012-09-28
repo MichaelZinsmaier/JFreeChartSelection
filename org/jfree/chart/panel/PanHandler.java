@@ -146,6 +146,9 @@ public class PanHandler extends AbstractMouseHandler {
         panel.clearLiveMouseHandler();
     }
 
+    /**
+     * @see AbstractMouseHandler#isLiveHandler()
+     */
 	public boolean isLiveHandler() {
 		return true;
 	}

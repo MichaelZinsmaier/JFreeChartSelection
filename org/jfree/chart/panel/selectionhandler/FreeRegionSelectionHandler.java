@@ -52,9 +52,11 @@ import org.jfree.chart.ChartPanel;
 import org.jfree.util.ShapeUtilities;
 
 /**
- * A mouse handler that allows data items to be selected.
+ * A mouse handler that allows data items to be selected. The selection shape
+ * can be freely manipulated by dragging the mouse away from the starting
+ * point. 
  * 
- * @since 1.0.14
+ * Will only work together with a ChartPanel as event source
  */
 public class FreeRegionSelectionHandler extends RegionSelectionHandler {
 
@@ -76,7 +78,11 @@ public class FreeRegionSelectionHandler extends RegionSelectionHandler {
 		this.selectionPath = new GeneralPath();
 		this.lastPoint = null;
 	}
-
+	
+	/**
+	 * Creates a new instance with a modifier restriction
+	 * @param modifier e.g. shift has to be pressed InputEvents.SHIFT_MASK
+	 */
 	public FreeRegionSelectionHandler(int modifier) {
 		super(modifier);
 		this.selectionPath = new GeneralPath();
@@ -99,12 +105,11 @@ public class FreeRegionSelectionHandler extends RegionSelectionHandler {
 		this.selectionPath = new GeneralPath();
 		this.lastPoint = null;
 	}
-
+	
 	/**
-	 * Handles a mouse pressed event.
+	 * starts the circle selection by fixing the start point of the selection path
 	 * 
-	 * @param e
-	 *            the event.
+	 * @param e the event.
 	 */
 	public void mousePressed(MouseEvent e) {
 		if (!(e.getSource() instanceof ChartPanel)) {
@@ -126,10 +131,10 @@ public class FreeRegionSelectionHandler extends RegionSelectionHandler {
 	}
 
 	/**
-	 * Handles a mouse dragged event.
+	 * adjusts the selection by adding a new line segment from the last to the
+	 * actual position
 	 * 
-	 * @param e
-	 *            the event.
+	 * @param e the event.
 	 */
 	public void mouseDragged(MouseEvent e) {
 		ChartPanel panel = (ChartPanel) e.getSource();
@@ -150,6 +155,11 @@ public class FreeRegionSelectionHandler extends RegionSelectionHandler {
 		panel.repaint();
 	}
 
+	/**
+	 * finishes the selection and calls the {@link SelectionManager} of
+	 * the event source. The SelectionManager is then responsible for the processing
+	 * of the geometric selection.
+	 */
 	public void mouseReleased(MouseEvent e) {
 		ChartPanel panel = (ChartPanel) e.getSource();
 		if (this.lastPoint == null) {

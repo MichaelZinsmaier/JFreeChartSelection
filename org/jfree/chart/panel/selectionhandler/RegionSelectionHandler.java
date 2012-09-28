@@ -49,12 +49,16 @@ import java.awt.event.MouseEvent;
 import org.jfree.chart.panel.AbstractMouseHandler;
 
 /**
- * A mouse handler that allows data items to be selected.
+ * A mouse handler that allows data items to be selected based on a selection region that is
+ * created by the handler.
  *
- * @since 1.0.14
  */
 public abstract class RegionSelectionHandler extends AbstractMouseHandler {
 
+	/**
+	 * Creates a new instance with a modifier restriction
+	 * @param modifier e.g. shift has to be pressed InputEvents.SHIFT_MASK
+	 */
     public RegionSelectionHandler(int modifier) {
 		super(modifier);
     }
@@ -81,13 +85,16 @@ public abstract class RegionSelectionHandler extends AbstractMouseHandler {
         this(new BasicStroke(1.0f), Color.darkGray, new Color(255, 0, 255, 50));
     }
 
-    /**
-     * Creates a new selection handler with the specified attributes.
-     *
-     * @param outlineStroke  the outline stroke.
-     * @param outlinePaint  the outline paint.
-     * @param fillPaint  the fill paint.
-     */
+	/**
+	 * Creates a new selection handler with the specified attributes.
+	 * 
+	 * @param outlineStroke
+	 *            the outline stroke.
+	 * @param outlinePaint
+	 *            the outline paint.
+	 * @param fillPaint
+	 *            the fill paint.
+	 */
     public RegionSelectionHandler(Stroke outlineStroke, Paint outlinePaint,
             Paint fillPaint) {
         super();

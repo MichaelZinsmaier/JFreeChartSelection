@@ -21,11 +21,33 @@ import org.jfree.data.datasetextension.impl.PieCursor;
 import org.jfree.data.datasetextension.impl.XYCursor;
 import org.jfree.data.general.Dataset;
 
+/**
+ * Selects data items based on the shape of their rendered entities and a given point or region
+ * selection in the ChartPanel plane.<br>
+ * <br>
+ * region selection:<br>
+ * Depending on the rendering mode {@link #intersectionMode} selects either all entities that
+ * intersect the selection region or all entities that are completely inside the selection region.<br>
+ * <br>
+ * point selection:<br>
+ * Selects all entities that contain the selection point
+ * <br>
+ * <br>
+ * The entities are retrieved from the ChartPanel
+ * 
+ * @author zinsmaie
+ */
 public class EntitySelectionManager implements SelectionManager {
 	
+	/** if true a entity has to intersect the selection region to be selected
+	 * if false a entity has to be completely inside the selection region to be selected.
+	 */
 	private boolean intersectionMode;
+	/** the ChartPanel this manager is registered on*/
 	private final ChartPanel renderSourcePanel;
+	/** couples datasets and selection information of datasets that do not support {@link DatasetSelectionExtension} */
 	private final DatasetExtensionManager extensionManager;
+	/** all datasets that are handled by the manager. */
 	private final Dataset[] datasets;
 
 	// instantiated only once to increase execution speed
@@ -33,6 +55,13 @@ public class EntitySelectionManager implements SelectionManager {
 	private final CategoryCursor categoryCursor = new CategoryCursor();
 	private final PieCursor pieCursor = new PieCursor();
 
+	/**
+	 * constructs a new selection manager. Use this constructor if all datasets support
+	 * {@link DatasetSelectionExtension}
+	 * 
+	 * @param renderSourcePanel {@link #renderSourcePanel}
+	 * @param datasets {@link #datasets}
+	 */
 	public EntitySelectionManager(ChartPanel renderSourcePanel,
 			Dataset[] datasets) {
 		this.renderSourcePanel = renderSourcePanel;
@@ -42,6 +71,16 @@ public class EntitySelectionManager implements SelectionManager {
 		this.intersectionMode = false;
 	}
 
+	/**
+	 * constructs a new selection manager and provides a extension manager. Use
+	 * this constructor if some of the used datasets do not support {@link DatasetSelectionExtension}.
+	 * These datasets can be coupled with appropriate helper objects by registering them
+	 * to the extension manager before the constructor call.
+	 * 
+	 * @param renderSourcePanel {@link #renderSourcePanel}
+	 * @param datasets {@link #datasets}
+	 * @param extensionManager {@link #extensionManager}
+	 */
 	public EntitySelectionManager(ChartPanel renderSourcePanel,
 			Dataset[] datasets, DatasetExtensionManager extensionManager) {
 		this.renderSourcePanel = renderSourcePanel;
@@ -52,10 +91,18 @@ public class EntitySelectionManager implements SelectionManager {
 		this.intersectionMode = false;
 	}
 	
+	/**
+	 * @param on {@link #intersectionMode}
+	 */
 	public void setIntersectionSelection(boolean on) {
 		this.intersectionMode = on;
 	}
 
+	/**
+	 * {@link SelectionManager#select(double, double)}
+	 * <br>
+	 *  Selection based on the shape of the data items 
+	 */
 	public void select(double x, double y) {
 
 		//scale if necessary
@@ -87,6 +134,12 @@ public class EntitySelectionManager implements SelectionManager {
 		}
 	}
 
+	/**
+	 * 
+	 * {@link SelectionManager#select(Rectangle2D)}
+	 * <br>
+	 *  Selection based on the shape of the data items
+	 */
 	public void select(Rectangle2D pSelection) {
 		//scale if necessary
 		Rectangle2D selection;
@@ -152,6 +205,11 @@ public class EntitySelectionManager implements SelectionManager {
 		}
 	}
 
+	/**
+	 * {@link SelectionManager#select(GeneralPath)}
+	 * <br>
+	 *  Selection based on the shape of the data items
+	 */
 	public void select(GeneralPath pSelection) {
 		//scale if necessary
 		GeneralPath selection;
@@ -203,6 +261,8 @@ public class EntitySelectionManager implements SelectionManager {
 		}
 	}
 
+	 /** {@link SelectionManager#clearSelection()}
+	 */
 	public void clearSelection() {
 		for (int i = 0; i < this.datasets.length; i++) {
 			if (this.extensionManager.supports(this.datasets[i],
@@ -216,7 +276,14 @@ public class EntitySelectionManager implements SelectionManager {
 		}
 	}
 	
-	
+	/**
+	 * tests if the dataset is handled by the selection manager (part of {@link #datasets})
+	 * and if it either supports {@link DatasetSelectionExtension} directly or via the extension
+	 * manager.<br>
+	 * <br>
+	 * The selects the specified data item. 
+	 * @param e data item that should be selected
+	 */
 	private void select(DataItemEntity e) {
 		// to support propper clear functionality we must maintain
 		// all datasets that we change!
@@ -263,14 +330,34 @@ public class EntitySelectionManager implements SelectionManager {
 		}
 	}
 
+	/**
+	 * mutes the selection change listener for all handled datasets (in {@link #datasets}
+	 * and supports {@link DatasetSelectionExtension}
+	 */
 	private void muteAll() {
 		setNotifyOnListenerExtensions(false);
 	}
 
+	/**
+	 * unmutes the selection change listener for all handled datasets (in {@link #datasets}
+	 * and supports {@link DatasetSelectionExtension}
+	 * 
+	 * unmute should trigger a selection changed event if something happened since mute (but this is controlled
+	 * by the implementing classes and can only be assumed here)  
+	*/
 	private void unmuteAndTrigger() {
 		setNotifyOnListenerExtensions(true);
 	}
 
+	/**
+	 * mutes / unmutes the selection change listener for all handled datasets (in {@link #datasets}
+	 * and supports {@link DatasetSelectionExtension}
+	 * 
+	 * unmute should trigger a selection changed event if something happened since mute (but this is controlled
+	 * by the implementing classes and can only be assumed here)  
+	 * 
+	 * @param notify false to mute true to unmute 
+	 */
 	private void setNotifyOnListenerExtensions(boolean notify) {
 		for (int i = 0; i < this.datasets.length; i++) {
 			if (this.extensionManager.supports(datasets[i],

@@ -11,23 +11,45 @@ import org.jfree.data.datasetextension.impl.CategoryDatasetSelectionExtension;
 import org.jfree.data.datasetextension.impl.XYCursor;
 import org.jfree.data.datasetextension.impl.XYDatasetSelectionExtension;
 
+/**
+ * A helper class to define simple item rendering strategies.
+ * 
+ * Currently provides only support for paint manipulations based on the selection state of items.
+ * 
+ * @author zinsmaie
+ */
 public class IRSUtilities {
 
 	private IRSUtilities() {
 		//static helper class
 	}
 
+	//Reusable cursors for fast access
 	private static DatasetCursor cursor;
 	private final static XYCursor xyCursor = new XYCursor();
 	private final static CategoryCursor categoryCursor = new CategoryCursor();
 	
 	//Default methods for PaintIRS handling
 	
+	/**
+	 * A helper method that installs a {@link PaintIRS} on the specified renderer.
+	 * Highlights selected items by rendering them with the specified paint.
+	 * Works only if the renderer determines the outline paint {@link AbstractRenderer#getItemFillPaint(int, int) per item} 
+	 * 
+	 * @param renderer renders the dataset and is enhanced with the created IRS
+	 * @param ext access to the selection state the dataset items
+	 * @param fillPaint (might be null) defines a highlight color that should be used for the interior of selected items
+	 * @param itemPaint (might be null) defines a highlight color that should be used for selected items
+	 * @param outlinePaint (might be null) defines a highlight color that should be used for the outline of selected items
+	 */
 	public static void setSelectedItemPaintIRS(final AbstractRenderer renderer, final DatasetSelectionExtension ext,
 			final Paint fillPaint, final Paint itemPaint, final Paint outlinePaint) {
 		
 		PaintIRS irs = new DefaultPaintIRS(renderer) {
 						
+			/** a generated serial id */
+			private static final long serialVersionUID = -7838213904327581272L;
+
 			public Paint getItemPaint(int row, int column) {
 				if (itemPaint == null || !isSelected(row, column)) {
 					return super.getItemPaint(row, column);
@@ -74,15 +96,42 @@ public class IRSUtilities {
 		//this is where the magic happens
 		renderer.setPaintIRS(irs);
 	}
-	
+
+	/**
+	 * A helper method that installs a {@link PaintIRS} on the specified renderer.
+	 * Highlights selected items by rendering their interior with the specified paint.
+	 * Works only if the renderer determines the outline paint {@link AbstractRenderer#getItemFillPaint(int, int) per item} 
+	 * 
+	 * @param renderer renders the dataset and is enhanced with the created IRS
+	 * @param ext access to the selection state the dataset items
+	 * @param fillPaint defines a highlight color that should be used for the interior of selected items
+	 */
 	public static void setSelectedItemFillPaint(final AbstractRenderer renderer, final DatasetSelectionExtension ext, final Paint fillPaint) {
 		setSelectedItemPaintIRS(renderer, ext, fillPaint, null, null);
 	}
 	
+	/**
+	 * A helper method that installs a {@link PaintIRS} on the specified renderer.
+	 * Highlights selected items by rendering them with the specified paint.
+	 * Works only if the renderer determines the item paint {@link AbstractRenderer#getItemPaint(int, int) per item} 
+	 * 
+	 * @param renderer renders the dataset and is enhanced with the created IRS
+	 * @param ext access to the selection state the dataset items
+	 * @param itemPaint defines a highlight color that should be used for selected items
+	 */
 	public static void setSelectedItemPaint(final AbstractRenderer renderer, final DatasetSelectionExtension ext, final Paint itemPaint) {
 		setSelectedItemPaintIRS(renderer, ext, null, itemPaint, null);
 	}
 	
+	/**
+	 * A helper method that installs a {@link PaintIRS} on the specified renderer.
+	 * Highlights selected items by rendering their outline with the defined paint.
+	 * Works only if the renderer determines the outline paint {@link AbstractRenderer#getItemOutlinePaint(int, int) per item} 
+	 * 
+	 * @param renderer renders the dataset and is enhanced with the created IRS
+	 * @param ext access to the selection state the dataset items
+	 * @param outlinePaint defines a highlight color that should be used for the outline of selected items
+	 */
 	public static void setSelectedItemOutlinePaint(final AbstractRenderer renderer, final DatasetSelectionExtension ext, final Paint outlinePaint) {
 		setSelectedItemPaintIRS(renderer, ext, null, null, outlinePaint);
 	}

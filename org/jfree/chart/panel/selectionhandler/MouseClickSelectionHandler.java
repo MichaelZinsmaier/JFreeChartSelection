@@ -5,16 +5,36 @@ import java.awt.event.MouseEvent;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.panel.AbstractMouseHandler;
 
+/**
+ * An auxiliary mouse handler that selects data items on click.
+ *  
+ * Will only work together with a ChartPanel as event source 
+ *  
+ * @author zinsmaie
+ */
 public class MouseClickSelectionHandler extends AbstractMouseHandler {
-	    
+		
+	/**
+	 * default constructor 
+	 */
 		public MouseClickSelectionHandler() {
 			super();
 		}
 	
+		/**
+		 * Creates a new instance with a modifier restriction
+		 * @param modifier e.g. shift has to be pressed InputEvents.SHIFT_MASK
+		 */
 	    public MouseClickSelectionHandler(int modifier) {
 			super(modifier);
 	    }
 
+	    /**
+	     * point wise selection
+	     * <br><br>
+	     * delegates to the {@link SelectionManager} of the ChartPanel, this
+	     * listener is paired with.
+	     */
 		public void mouseClicked(MouseEvent e) {
 	    	if (!(e.getSource() instanceof ChartPanel)) {
 				return;
@@ -32,6 +52,9 @@ public class MouseClickSelectionHandler extends AbstractMouseHandler {
 	    	}
 	    }
 
+		/**
+		 * this is not a live handler
+		 */
 		public boolean isLiveHandler() {
 			return false;
 		}
