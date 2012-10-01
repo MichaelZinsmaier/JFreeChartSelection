@@ -23,10 +23,12 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.panel.selectionhandler.FreeRegionSelectionHandler;
+import org.jfree.chart.panel.selectionhandler.RegionSelectionHandler;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.general.DatasetChangeEvent;
 import org.jfree.data.general.DatasetChangeListener;
+import org.jfree.data.selection.EntitySelectionManager;
 import org.jfree.data.time.Month;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
@@ -205,9 +207,10 @@ public class SelectionDemo1 extends ApplicationFrame
 
 
 
-        FreeRegionSelectionHandler selectionHandler = new FreeRegionSelectionHandler();
+        RegionSelectionHandler selectionHandler = new FreeRegionSelectionHandler();
         //selectionHandler.setModifier(InputEvent.SHIFT_MASK);
         panel.addMouseHandler(selectionHandler);
+        panel.setSelectionManager(new EntitySelectionManager(panel));
         return panel;
     }
 

@@ -26,12 +26,14 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.NumberAxis;
-import org.jfree.chart.panel.selectionhandler.CircularRegionSelectionHandler;
+import org.jfree.chart.panel.selectionhandler.RectangularRegionSelectionHandler;
+import org.jfree.chart.panel.selectionhandler.RegionSelectionHandler;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYDotRenderer;
 import org.jfree.data.general.DatasetChangeEvent;
 import org.jfree.data.general.DatasetChangeListener;
+import org.jfree.data.selection.EntitySelectionManager;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
@@ -104,6 +106,7 @@ public class SelectionDemo3 extends ApplicationFrame implements DatasetChangeLis
         XYDotRenderer r = new XYDotRenderer();
        r.setDotHeight(2);
         r.setDotWidth(2);
+
         r.setSeriesPaint(0, Color.blue);
         r.setSeriesPaint(1, Color.green);
         r.setSeriesPaint(2, Color.yellow);
@@ -181,9 +184,10 @@ public class SelectionDemo3 extends ApplicationFrame implements DatasetChangeLis
 
         chartPanel.removeMouseHandler(chartPanel.getZoomHandler());
 
-        CircularRegionSelectionHandler selectionHandler = new CircularRegionSelectionHandler();
+        RegionSelectionHandler selectionHandler = new RectangularRegionSelectionHandler();
         //selectionHandler.setModifier(InputEvent.SHIFT_MASK);
         chartPanel.addMouseHandler(selectionHandler);
+        chartPanel.setSelectionManager(new EntitySelectionManager(chartPanel));
         return chartPanel;
     }
 

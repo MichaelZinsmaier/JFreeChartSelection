@@ -49,147 +49,150 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
 import org.jfree.chart.ChartPanel;
-import org.jfree.chart.JFreeChart;
+import org.jfree.chart.RenderingSource;
+import org.jfree.data.selection.SelectionManager;
 import org.jfree.util.ShapeUtilities;
 
 /**
  * A mouse handler that allows data items to be selected.
- *
+ * 
  * @since 1.0.14
  */
 public class RectangularRegionSelectionHandler extends RegionSelectionHandler {
 
-    /**
-     * The selection rectangle (in Java2D space).
-     */
-    private Rectangle selection;
+	/**
+	 * The selection rectangle (in Java2D space).
+	 */
+	private Rectangle selectionRect;
 
-    /**
-     * The last mouse point.
-     */
-    private Point2D startPoint;
+	/**
+	 * The last mouse point.
+	 */
+	private Point2D startPoint;
 
-    /**
-     * Creates a new default instance.
-     */
-    public RectangularRegionSelectionHandler() {
-    	super();
-        this.selection = null;
-        this.startPoint = null;        
-    }
+	/**
+	 * Creates a new default instance.
+	 */
+	public RectangularRegionSelectionHandler() {
+		super();
+		this.selectionRect = null;
+		this.startPoint = null;
+	}
 
-    /**
-     * Creates a new selection handler with the specified attributes.
-     *
-     * @param outlineStroke  the outline stroke.
-     * @param outlinePaint  the outline paint.
-     * @param fillPaint  the fill paint.
-     */
-    public RectangularRegionSelectionHandler(Stroke outlineStroke, Paint outlinePaint,
-            Paint fillPaint) {
-        super(outlineStroke, outlinePaint, fillPaint);
-        this.selection = null;
-        this.startPoint = null;
-    }
+	/**
+	 * Creates a new selection handler with the specified attributes.
+	 * 
+	 * @param outlineStroke
+	 *            the outline stroke.
+	 * @param outlinePaint
+	 *            the outline paint.
+	 * @param fillPaint
+	 *            the fill paint.
+	 */
+	public RectangularRegionSelectionHandler(Stroke outlineStroke,
+			Paint outlinePaint, Paint fillPaint) {
+		super(outlineStroke, outlinePaint, fillPaint);
+		this.selectionRect = null;
+		this.startPoint = null;
+	}
 
+	/**
+	 * Handles a mouse pressed event.
+	 * 
+	 * @param e
+	 *            the event.
+	 */
+	public void mousePressed(MouseEvent e) {
+		ChartPanel panel = (ChartPanel) e.getSource();
+		Rectangle2D dataArea = panel.getScreenDataArea();
+		if (dataArea.contains(e.getPoint())) {
+			if (panel instanceof RenderingSource) {
+				SelectionManager selectionManager = ((RenderingSource) panel).getSelectionManager();
+				if (selectionManager != null) {
+					// NOT IMPLEMENTED
+					
+					// if (!e.isShiftDown()) {
+					// s.clearSelection();
+					// chart.setNotify(true);
+					// }
+					Point pt = e.getPoint();
+					this.startPoint = new Point(pt);
+				}
+			}
+		}
+	}
 
-    /**
-     * Handles a mouse pressed event.
-     * 
-     * @param e  the event.
-     */
-    public void mousePressed(MouseEvent e) {
-        ChartPanel panel = (ChartPanel) e.getSource();
-        Rectangle2D dataArea = panel.getScreenDataArea();
-        if (dataArea.contains(e.getPoint())) {
+	/**
+	 * Handles a mouse dragged event.
+	 * 
+	 * @param e
+	 *            the event.
+	 */
+	public void mouseDragged(MouseEvent e) {
+		if (this.startPoint == null) {
+			return; // we never started a selection
+		}
+		ChartPanel panel = (ChartPanel) e.getSource();
+		Point pt = e.getPoint();
+		Point2D pt2 = ShapeUtilities.getPointInRectangle(pt.x, pt.y,
+				panel.getScreenDataArea());
 
-            JFreeChart chart = panel.getChart();
-//NOT IMPLEMENTED            
-//            if (panel instanceof Selectable) {
-//                Selectable s = (Selectable) panel;
-//                if (!e.isShiftDown()) {
-//                    s.clearSelection();
-//                    chart.setNotify(true);
-//                }
-                Point pt = e.getPoint();
-                this.startPoint = new Point(pt);
-//            }
-            
-        }
-    }
+		selectionRect = getRect(startPoint, pt2);
+		panel.setSelectionShape(selectionRect);
+		panel.setSelectionFillPaint(this.fillPaint);
+		panel.setSelectionOutlinePaint(this.outlinePaint);
+		panel.repaint();
+	}
 
-    /**
-     * Handles a mouse dragged event.
-     *
-     * @param e  the event.
-     */
-    public void mouseDragged(MouseEvent e) {
-        if (this.startPoint == null) {
-            return;  // we never started a selection
-        }
-        ChartPanel panel = (ChartPanel) e.getSource();
-        Point pt = e.getPoint();
-        Point2D pt2 = ShapeUtilities.getPointInRectangle(pt.x, pt.y,
-                panel.getScreenDataArea());
+	public void mouseReleased(MouseEvent e) {
+		if (this.startPoint == null) {
+			return; // we never started a selection
+		}
 
-        
-        selection = getRect(startPoint, pt2);
-        panel.setSelectionShape(selection);
-        panel.setSelectionFillPaint(this.fillPaint);
-        panel.setSelectionOutlinePaint(this.outlinePaint);
-        panel.repaint();
-    }
+		ChartPanel panel = (ChartPanel) e.getSource();
+		SelectionManager selectionManager = ((RenderingSource) panel)
+				.getSelectionManager();
 
-    public void mouseReleased(MouseEvent e) {
-        if (this.startPoint == null) {
-            return;  // we never started a selection
-        }
-        ChartPanel panel = (ChartPanel) e.getSource();
+		// do something with the selection shape
+		if (selectionManager != null) {
+			selectionManager.select(selectionRect);
+		}
 
-        // do something with the selection shape
-       
-//        Selectable p = (Selectable) panel;
-//        if (p.canSelectByRegion()) {
-//            p.select(this.selection, panel.getScreenDataArea(), panel);
-//        }
-        
-        panel.setSelectionShape(null);
-        this.selection = null;
-        this.startPoint = null;
-        panel.repaint();
-        panel.clearLiveMouseHandler();
-    }
+		panel.setSelectionShape(null);
+		this.selectionRect = null;
+		this.startPoint = null;
+		panel.repaint();
+		panel.clearLiveMouseHandler();
+	}
 
+	private Rectangle getRect(Point2D p1, Point2D p2) {
+		int minX, minY;
+		int w, h;
 
-    
-    private Rectangle getRect(Point2D p1, Point2D p2) {
-        int minX, minY;
-        int w, h;
-        
-        //process x and w
-        if (p1.getX() < p2.getX()) {
-        	minX = (int)p1.getX();
-        	w = (int)p2.getX() - minX;
-        } else {
-        	minX = (int)p2.getX();
-        	w = (int)p1.getX() - minX;
-        	if (w <= 0) {
-        		w = 1;
-        	}
-        }
-        
-        //process y and h
-        if (p1.getY() < p2.getY()) {
-        	minY = (int)p1.getY();
-        	h = (int)p2.getY() - minY;
-        } else {
-        	minY = (int)p2.getY();
-        	h = (int)p1.getY() - minY;
-        	if (h <= 0) {
-        		h = 1;
-        	}
-        }
-        
-        return new Rectangle(minX, minY, w, h);
-    }
+		// process x and w
+		if (p1.getX() < p2.getX()) {
+			minX = (int) p1.getX();
+			w = (int) p2.getX() - minX;
+		} else {
+			minX = (int) p2.getX();
+			w = (int) p1.getX() - minX;
+			if (w <= 0) {
+				w = 1;
+			}
+		}
+
+		// process y and h
+		if (p1.getY() < p2.getY()) {
+			minY = (int) p1.getY();
+			h = (int) p2.getY() - minY;
+		} else {
+			minY = (int) p2.getY();
+			h = (int) p1.getY() - minY;
+			if (h <= 0) {
+				h = 1;
+			}
+		}
+
+		return new Rectangle(minX, minY, w, h);
+	}
 }

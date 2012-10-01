@@ -58,14 +58,15 @@ import java.awt.Shape;
 import java.io.Serializable;
 
 import org.jfree.chart.HashUtilities;
+import org.jfree.data.general.Dataset;
 import org.jfree.data.general.PieDataset;
 import org.jfree.util.ObjectUtilities;
 
 /**
  * A chart entity that represents one section within a pie plot.
  */
-public class PieSectionEntity extends ChartEntity
-                              implements Serializable {
+public class PieSectionEntity extends DataItemEntity
+                              implements Serializable  {
 
     /** For serialization. */
     private static final long serialVersionUID = 9199892576531984162L;
@@ -116,6 +117,10 @@ public class PieSectionEntity extends ChartEntity
      */
     public PieDataset getDataset() {
         return this.dataset;
+    }
+    
+    public Dataset getGeneralDataset() {
+    	return this.dataset;
     }
 
     /**

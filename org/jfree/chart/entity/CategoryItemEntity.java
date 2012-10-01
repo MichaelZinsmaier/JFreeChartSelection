@@ -56,13 +56,14 @@ import java.awt.Shape;
 import java.io.Serializable;
 
 import org.jfree.data.category.CategoryDataset;
+import org.jfree.data.general.Dataset;
 import org.jfree.util.ObjectUtilities;
 
 /**
  * A chart entity that represents one item within a category plot.
  */
-public class CategoryItemEntity extends ChartEntity
-        implements Cloneable, Serializable {
+public class CategoryItemEntity extends DataItemEntity
+        implements Cloneable, Serializable  {
 
     /** For serialization. */
     private static final long serialVersionUID = -8657249457902337349L;
@@ -179,6 +180,10 @@ public class CategoryItemEntity extends ChartEntity
         return this.dataset;
     }
 
+    public Dataset getGeneralDataset() {
+    	return this.dataset;
+    }
+    
     /**
      * Sets the dataset this entity refers to.
      *
