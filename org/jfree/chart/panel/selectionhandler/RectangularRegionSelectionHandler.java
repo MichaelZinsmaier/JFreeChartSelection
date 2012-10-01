@@ -77,6 +77,12 @@ public class RectangularRegionSelectionHandler extends RegionSelectionHandler {
 		this.startPoint = null;
 	}
 
+	public RectangularRegionSelectionHandler(int modifier) {
+		super(modifier);
+		this.selectionRect = null;
+		this.startPoint = null;
+	}
+	
 	/**
 	 * Creates a new selection handler with the specified attributes.
 	 * 
@@ -126,10 +132,11 @@ public class RectangularRegionSelectionHandler extends RegionSelectionHandler {
 	 *            the event.
 	 */
 	public void mouseDragged(MouseEvent e) {
+		ChartPanel panel = (ChartPanel) e.getSource();
 		if (this.startPoint == null) {
+			panel.clearLiveMouseHandler();
 			return; // we never started a selection
 		}
-		ChartPanel panel = (ChartPanel) e.getSource();
 		Point pt = e.getPoint();
 		Point2D pt2 = ShapeUtilities.getPointInRectangle(pt.x, pt.y,
 				panel.getScreenDataArea());
@@ -142,11 +149,11 @@ public class RectangularRegionSelectionHandler extends RegionSelectionHandler {
 	}
 
 	public void mouseReleased(MouseEvent e) {
+		ChartPanel panel = (ChartPanel) e.getSource();
 		if (this.startPoint == null) {
+			panel.clearLiveMouseHandler();
 			return; // we never started a selection
 		}
-
-		ChartPanel panel = (ChartPanel) e.getSource();
 		SelectionManager selectionManager = panel.getSelectionManager();
 
 		// do something with the selection shape

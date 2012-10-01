@@ -214,7 +214,7 @@ public class SelectionDemo1 extends ApplicationFrame implements
 		// extend the panel with a selection handler
 		RegionSelectionHandler selectionHandler = new FreeRegionSelectionHandler();
 		panel.addMouseHandler(selectionHandler);
-		panel.addAuxiliaryMouseHandler(new MouseClickSelectionHandler());
+		panel.addMouseHandler(new MouseClickSelectionHandler());
 
 		// extend the dataset with selection storage
 		DatasetExtensionManager dExManager = new DatasetExtensionManager();
