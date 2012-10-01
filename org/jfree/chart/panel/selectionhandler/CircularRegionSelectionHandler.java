@@ -50,7 +50,6 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
 import org.jfree.chart.ChartPanel;
-import org.jfree.data.selection.SelectionManager;
 import org.jfree.util.ShapeUtilities;
 
 /**
