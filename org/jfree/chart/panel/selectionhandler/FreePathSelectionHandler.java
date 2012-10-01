@@ -40,6 +40,7 @@
 
 package org.jfree.chart.panel.selectionhandler;
 
+import java.awt.Color;
 import java.awt.Paint;
 import java.awt.Point;
 import java.awt.Stroke;
@@ -47,19 +48,26 @@ import java.awt.event.MouseEvent;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.jfree.chart.ChartPanel;
 import org.jfree.util.ShapeUtilities;
 
 /**
- * A mouse handler that allows data items to be selected. The selection shape
+ * A mouse handler that allows data items to be selected. The selection path
  * can be freely manipulated by dragging the mouse away from the starting
- * point. 
+ * point. This selection handler is intended for intersection based selection.
  * 
  * Will only work together with a ChartPanel as event source
  */
-public class FreeRegionSelectionHandler extends RegionSelectionHandler {
+public class FreePathSelectionHandler extends RegionSelectionHandler {
 
+	/**
+	 * temporary storage for points
+	 */
+	private List points; 
+	
 	/**
 	 * The selection path (in Java2D space).
 	 */
@@ -69,24 +77,30 @@ public class FreeRegionSelectionHandler extends RegionSelectionHandler {
 	 * The start mouse point.
 	 */
 	private Point2D lastPoint;
+	
 
 	/**
 	 * Creates a new default instance.
 	 */
-	public FreeRegionSelectionHandler() {
-		super();
+	public FreePathSelectionHandler() {
 		this.selectionPath = new GeneralPath();
 		this.lastPoint = null;
+		this.points = new ArrayList();
+		setFillPaint(Color.GRAY);
+		setOutlinePaint(new Color(0,160,230));
 	}
 	
 	/**
 	 * Creates a new instance with a modifier restriction
 	 * @param modifier e.g. shift has to be pressed InputEvents.SHIFT_MASK
 	 */
-	public FreeRegionSelectionHandler(int modifier) {
+	public FreePathSelectionHandler(int modifier) {
 		super(modifier);
 		this.selectionPath = new GeneralPath();
 		this.lastPoint = null;
+		this.points = new ArrayList();
+		setFillPaint(Color.GRAY);
+		setOutlinePaint(new Color(0,160,230));
 	}
 
 	/**
@@ -99,15 +113,16 @@ public class FreeRegionSelectionHandler extends RegionSelectionHandler {
 	 * @param fillPaint
 	 *            the fill paint.
 	 */
-	public FreeRegionSelectionHandler(Stroke outlineStroke, Paint outlinePaint,
+	public FreePathSelectionHandler(Stroke outlineStroke, Paint outlinePaint,
 			Paint fillPaint) {
 		super(outlineStroke, outlinePaint, fillPaint);
 		this.selectionPath = new GeneralPath();
 		this.lastPoint = null;
+		this.points = new ArrayList();
 	}
 	
 	/**
-	 * starts the region selection by fixing the start point of the selection path
+	 * starts the selection by fixing the start point of the selection path
 	 * 
 	 * @param e the event.
 	 */
@@ -124,8 +139,8 @@ public class FreeRegionSelectionHandler extends RegionSelectionHandler {
 					selectionManager.clearSelection();
 				}
 				Point pt = e.getPoint();
-				this.selectionPath.moveTo(pt.getX(), pt.getY());
 				this.lastPoint = new Point(pt);
+				this.points.add(pt);
 			}
 		}
 	}
@@ -146,9 +161,12 @@ public class FreeRegionSelectionHandler extends RegionSelectionHandler {
 		Point2D pt2 = ShapeUtilities.getPointInRectangle(pt.x, pt.y,
 				panel.getScreenDataArea());
 		if (pt2.distance(this.lastPoint) > 5) {
-			this.selectionPath.lineTo(pt2.getX(), pt2.getY());
+			this.points.add(new Point((int)pt2.getX(), (int)pt2.getY()));
 			this.lastPoint = pt2;
 		}
+		
+		selectionPath = createPathFromPoints(this.points);
+		
 		panel.setSelectionShape(selectionPath);
 		panel.setSelectionFillPaint(this.fillPaint);
 		panel.setSelectionOutlinePaint(this.outlinePaint);
@@ -166,6 +184,8 @@ public class FreeRegionSelectionHandler extends RegionSelectionHandler {
 			panel.clearLiveMouseHandler();
 			return; // we never started a selection
 		}
+		
+		this.selectionPath = createPathFromPoints(this.points);		
 		this.selectionPath.closePath();
 		SelectionManager selectionManager = panel.getSelectionManager();
 
@@ -176,9 +196,40 @@ public class FreeRegionSelectionHandler extends RegionSelectionHandler {
 
 		panel.setSelectionShape(null);
 		this.selectionPath.reset();
+		this.points.clear();
 		this.lastPoint = null;
 		panel.repaint();
 		panel.clearLiveMouseHandler();
 	}
 
+	/**
+	 * creates a line shape from a series of points 
+	 * 
+	 * @param points
+	 * @return the line shape
+	 */
+	private GeneralPath createPathFromPoints(List points) {
+		GeneralPath path = new GeneralPath();
+		
+		if (points.size() > 0) {
+			Point p = (Point)points.get(0);
+			path.moveTo(p.getX(), p.getY());
+		}
+		
+		for (int i = 1; i < points.size(); i++) {
+			Point p = (Point)points.get(i);
+			path.lineTo((p.getX() - 1), (p.getY() + 1));
+			path.lineTo((p.getX() + 1), (p.getY() + 1));
+		}
+
+		for (int i = (points.size() -1); i >= 0; i--) {
+			Point p = (Point)points.get(i);
+			path.lineTo((p.getX() + 1), (p.getY() - 1));
+			path.lineTo((p.getX() - 1), (p.getY() - 1));
+		}
+
+		return path;
+	}
+
+	
 }

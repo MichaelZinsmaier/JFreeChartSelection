@@ -26,7 +26,7 @@ import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.panel.selectionhandler.EntitySelectionManager;
-import org.jfree.chart.panel.selectionhandler.FreeRegionSelectionHandler;
+import org.jfree.chart.panel.selectionhandler.FreePathSelectionHandler;
 import org.jfree.chart.panel.selectionhandler.MouseClickSelectionHandler;
 import org.jfree.chart.panel.selectionhandler.RegionSelectionHandler;
 import org.jfree.chart.plot.PlotOrientation;
@@ -184,7 +184,7 @@ public class SelectionDemo4 extends ApplicationFrame implements
 		panel.setMouseWheelEnabled(true);
 
 		// add a selection handler
-		RegionSelectionHandler selectionHandler = new FreeRegionSelectionHandler();
+		RegionSelectionHandler selectionHandler = new FreePathSelectionHandler();
 		panel.addMouseHandler(selectionHandler);
 		panel.addMouseHandler(new MouseClickSelectionHandler());
 		panel.removeMouseHandler(panel.getZoomHandler());
