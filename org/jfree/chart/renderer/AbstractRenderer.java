@@ -119,6 +119,16 @@ import org.jfree.chart.labels.ItemLabelAnchor;
 import org.jfree.chart.labels.ItemLabelPosition;
 import org.jfree.chart.plot.DrawingSupplier;
 import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.renderer.contribution.DefaultLabelIRS;
+import org.jfree.chart.renderer.contribution.DefaultPaintIRS;
+import org.jfree.chart.renderer.contribution.DefaultShapeIRS;
+import org.jfree.chart.renderer.contribution.DefaultStrokeIRS;
+import org.jfree.chart.renderer.contribution.DefaultVisibilityIRS;
+import org.jfree.chart.renderer.contribution.LabelIRS;
+import org.jfree.chart.renderer.contribution.PaintIRS;
+import org.jfree.chart.renderer.contribution.ShapeIRS;
+import org.jfree.chart.renderer.contribution.StrokeIRS;
+import org.jfree.chart.renderer.contribution.VisibilityIRS;
 import org.jfree.chart.title.LegendTitle;
 import org.jfree.io.SerialUtilities;
 import org.jfree.ui.TextAnchor;
@@ -382,6 +392,18 @@ public abstract class AbstractRenderer implements Cloneable, Serializable {
 
     /** An event for re-use. */
     private transient RendererChangeEvent event;
+    
+    //Item Rendering Strategies //
+    private LabelIRS labelIRS = new DefaultLabelIRS(this);
+    
+    private PaintIRS paintIRS = new DefaultPaintIRS(this);
+    
+    private ShapeIRS shapeIRS = new DefaultShapeIRS(this);
+    
+    private StrokeIRS strokeIRS = new DefaultStrokeIRS(this);
+    
+    private VisibilityIRS visibilityIRS = new DefaultVisibilityIRS(this);
+    //
 
     /**
      * Default constructor.
@@ -488,7 +510,7 @@ public abstract class AbstractRenderer implements Cloneable, Serializable {
      * @return A boolean.
      */
     public boolean getItemVisible(int series, int item) {
-        return isSeriesVisible(series);
+        return visibilityIRS.getItemVisible(series, item);
     }
 
     /**
@@ -734,7 +756,7 @@ public abstract class AbstractRenderer implements Cloneable, Serializable {
      * @return The paint (never <code>null</code>).
      */
     public Paint getItemPaint(int row, int column) {
-        return lookupSeriesPaint(row);
+        return paintIRS.getItemPaint(row, column);
     }
 
     /**
@@ -909,7 +931,7 @@ public abstract class AbstractRenderer implements Cloneable, Serializable {
      * @return The paint (never <code>null</code>).
      */
     public Paint getItemFillPaint(int row, int column) {
-        return lookupSeriesFillPaint(row);
+        return paintIRS.getItemFillPaint(row, column);
     }
 
     /**
@@ -1075,7 +1097,7 @@ public abstract class AbstractRenderer implements Cloneable, Serializable {
      * @return The paint (never <code>null</code>).
      */
     public Paint getItemOutlinePaint(int row, int column) {
-        return lookupSeriesOutlinePaint(row);
+        return paintIRS.getItemOutlinePaint(row, column);
     }
 
     /**
@@ -1240,7 +1262,7 @@ public abstract class AbstractRenderer implements Cloneable, Serializable {
      * @return The stroke (never <code>null</code>).
      */
     public Stroke getItemStroke(int row, int column) {
-        return lookupSeriesStroke(row);
+        return strokeIRS.getItemStroke(row, column);
     }
 
     /**
@@ -1418,7 +1440,7 @@ public abstract class AbstractRenderer implements Cloneable, Serializable {
      * @return The stroke (never <code>null</code>).
      */
     public Stroke getItemOutlineStroke(int row, int column) {
-        return lookupSeriesOutlineStroke(row);
+        return strokeIRS.getItemOutlineStroke(row, column);
     }
 
     /**
@@ -1584,7 +1606,7 @@ public abstract class AbstractRenderer implements Cloneable, Serializable {
      * @return The shape (never <code>null</code>).
      */
     public Shape getItemShape(int row, int column) {
-        return lookupSeriesShape(row);
+        return shapeIRS.getItemShape(row, column);
     }
 
     /**
@@ -1745,7 +1767,7 @@ public abstract class AbstractRenderer implements Cloneable, Serializable {
      * @return A boolean.
      */
     public boolean isItemLabelVisible(int row, int column) {
-        return isSeriesItemLabelsVisible(row);
+        return labelIRS.isItemLabelVisible(row, column);
     }
 
     /**
@@ -1881,14 +1903,7 @@ public abstract class AbstractRenderer implements Cloneable, Serializable {
      * @return The font (never <code>null</code>).
      */
     public Font getItemLabelFont(int row, int column) {
-        Font result = this.itemLabelFont;
-        if (result == null) {
-            result = getSeriesItemLabelFont(row);
-            if (result == null) {
-                result = this.baseItemLabelFont;
-            }
-        }
-        return result;
+        return labelIRS.getItemLabelFont(row, column);
     }
 
     /**
@@ -2102,7 +2117,7 @@ public abstract class AbstractRenderer implements Cloneable, Serializable {
      * @see #getNegativeItemLabelPosition(int, int)
      */
     public ItemLabelPosition getPositiveItemLabelPosition(int row, int column) {
-        return getSeriesPositiveItemLabelPosition(row);
+        return labelIRS.getPositiveItemLabelPosition(row, column);
     }
 
     /**
@@ -2223,7 +2238,7 @@ public abstract class AbstractRenderer implements Cloneable, Serializable {
      * @see #getPositiveItemLabelPosition(int, int)
      */
     public ItemLabelPosition getNegativeItemLabelPosition(int row, int column) {
-        return getSeriesNegativeItemLabelPosition(row);
+        return labelIRS.getNegativeItemLabelPosition(row, column);
     }
 
     /**
