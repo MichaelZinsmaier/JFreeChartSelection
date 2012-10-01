@@ -554,10 +554,8 @@ public class ChartPanel extends JPanel implements ChartChangeListener,
 	 * @since 1.0.13
 	 */
 	private List overlays;
-	
 
 	private SelectionManager selectionManager;
-	
 
 	/**
 	 * Constructs a panel that displays the specified chart.
@@ -1417,25 +1415,26 @@ public class ChartPanel extends JPanel implements ChartChangeListener,
 				e.printStackTrace();
 			}
 		} else if (this.mouseWheelHandler != null) {
-				// use reflection to deregister the mouseWheelHandler
-				try {
-					Class mwl = Class.forName("java.awt.event.MouseWheelListener");
-					Class c = ChartPanel.class;
-					Method m = c.getMethod("removeMouseWheelListener", new Class[] { mwl });
-					m.invoke(this, new Object[] { this.mouseWheelHandler });
-				} catch (ClassNotFoundException e) {
-					// must be running on JRE 1.3.1, so just ignore this
-				} catch (SecurityException e) {
-					e.printStackTrace();
-				} catch (NoSuchMethodException e) {
-					e.printStackTrace();
-				} catch (IllegalArgumentException e) {
-					e.printStackTrace();
-				} catch (IllegalAccessException e) {
-					e.printStackTrace();
-				} catch (InvocationTargetException e) {
-					e.printStackTrace();
-				}
+			// use reflection to deregister the mouseWheelHandler
+			try {
+				Class mwl = Class.forName("java.awt.event.MouseWheelListener");
+				Class c = ChartPanel.class;
+				Method m = c.getMethod("removeMouseWheelListener",
+						new Class[] { mwl });
+				m.invoke(this, new Object[] { this.mouseWheelHandler });
+			} catch (ClassNotFoundException e) {
+				// must be running on JRE 1.3.1, so just ignore this
+			} catch (SecurityException e) {
+				e.printStackTrace();
+			} catch (NoSuchMethodException e) {
+				e.printStackTrace();
+			} catch (IllegalArgumentException e) {
+				e.printStackTrace();
+			} catch (IllegalAccessException e) {
+				e.printStackTrace();
+			} catch (InvocationTargetException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -2010,7 +2009,6 @@ public class ChartPanel extends JPanel implements ChartChangeListener,
 			handler.mouseDragged(e);
 		}
 
-
 	}
 
 	/**
@@ -2065,23 +2063,37 @@ public class ChartPanel extends JPanel implements ChartChangeListener,
 		// new entity code...
 		Object[] listeners = this.chartMouseListeners
 				.getListeners(ChartMouseListener.class);
-		if (listeners.length == 0) {
-			return;
-		}
-
-		ChartEntity entity = null;
-		if (this.info != null) {
-			EntityCollection entities = this.info.getEntityCollection();
-			if (entities != null) {
-				entity = entities.getEntity(x, y);
+		if (listeners.length >= 0) {
+			//handel old listeners
+			ChartEntity entity = null;
+			if (this.info != null) {
+				EntityCollection entities = this.info.getEntityCollection();
+				if (entities != null) {
+					entity = entities.getEntity(x, y);
+				}
 			}
-		}
-		ChartMouseEvent chartEvent = new ChartMouseEvent(getChart(), event,
-				entity);
-		for (int i = listeners.length - 1; i >= 0; i -= 1) {
-			((ChartMouseListener) listeners[i]).chartMouseClicked(chartEvent);
+			ChartMouseEvent chartEvent = new ChartMouseEvent(getChart(), event,
+					entity);
+			for (int i = listeners.length - 1; i >= 0; i -= 1) {
+				((ChartMouseListener) listeners[i])
+						.chartMouseClicked(chartEvent);
+			}
+
 		}
 
+		// handle new mouse handler based listeners
+
+		if (this.liveMouseHandler != null) {
+			this.liveMouseHandler.mouseClicked(event);
+		}
+
+		// now process the auxiliary handlers
+		Iterator iterator = this.auxiliaryMouseHandlers.iterator();
+		while (iterator.hasNext()) {
+			AbstractMouseHandler handler = (AbstractMouseHandler) iterator
+					.next();
+			handler.mouseClicked(event);
+		}
 	}
 
 	/**
@@ -3158,6 +3170,10 @@ public class ChartPanel extends JPanel implements ChartChangeListener,
 		this.availableMouseHandlers.add(handler);
 	}
 
+	public void addAuxiliaryMouseHandler(AbstractMouseHandler handler) {
+		this.auxiliaryMouseHandlers.add(handler);
+	}
+	
 	/**
 	 * Removes a mouse handler.
 	 * 
@@ -3172,6 +3188,10 @@ public class ChartPanel extends JPanel implements ChartChangeListener,
 	 */
 	public boolean removeMouseHandler(AbstractMouseHandler handler) {
 		return this.availableMouseHandlers.remove(handler);
+	}
+	
+	public void removeAuxiliaryMouseHandler(AbstractMouseHandler handler) {
+		this.auxiliaryMouseHandlers.remove(handler);
 	}
 
 	/**
@@ -3293,7 +3313,6 @@ public class ChartPanel extends JPanel implements ChartChangeListener,
 	 * A list of {@link DatasetAndSelection} objects.
 	 */
 	private List selectionStates = new java.util.ArrayList();
-
 
 	public ZoomHandler getZoomHandler() {
 		return this.zoomHandler;
