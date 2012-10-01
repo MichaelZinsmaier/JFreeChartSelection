@@ -2,9 +2,12 @@ package org.jfree.data.datasetextension.impl;
 
 import javax.swing.event.EventListenerList;
 
+import org.jfree.data.datasetextension.DatasetExtension;
 import org.jfree.data.datasetextension.DatasetSelectionExtension;
+import org.jfree.data.event.DatasetChangeListener;
 import org.jfree.data.event.SelectionChangeEvent;
 import org.jfree.data.event.SelectionChangeListener;
+import org.jfree.data.general.Dataset;
 
 /**
  * Base class for separate selection extension implementations. Provides notification handling
@@ -13,7 +16,7 @@ import org.jfree.data.event.SelectionChangeListener;
  * @author zinsmaie
  *
  */
-public abstract class AbstractDatasetSelectionExtension implements DatasetSelectionExtension {
+public abstract class AbstractDatasetSelectionExtension implements DatasetSelectionExtension, DatasetChangeListener {
 
     /** a generated serial id */
 	private static final long serialVersionUID = 4206903652292146757L;
@@ -28,6 +31,21 @@ public abstract class AbstractDatasetSelectionExtension implements DatasetSelect
      *  if notify is reset to true.
      */
     private boolean dirty;
+    
+	/** reference to the extended dataset */
+	private final Dataset dataset;
+    
+    public AbstractDatasetSelectionExtension(Dataset dataset) {
+    	this.dataset = dataset;
+    	this.dataset.addChangeListener(this);
+    }
+    
+    /**
+     * {@link DatasetExtension#getDataset}
+     */
+    public Dataset getDataset() {
+    	return this.dataset;
+    }
     
     /** 
      * {@link DatasetSelectionExtension#addChangeListener(org.jfree.data.event.LabelChangeListener)

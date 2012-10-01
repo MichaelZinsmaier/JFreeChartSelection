@@ -4,6 +4,7 @@ import java.util.EventListener;
 
 /**
  * A listener that wants to be informed about changes of the label attribute of data items
+ * 
  * @author zinsmaie
  *
  */

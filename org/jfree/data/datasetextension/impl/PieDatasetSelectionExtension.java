@@ -4,12 +4,11 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 import org.jfree.data.datasetextension.DatasetCursor;
-import org.jfree.data.datasetextension.DatasetExtension;
 import org.jfree.data.datasetextension.DatasetIterator;
 import org.jfree.data.datasetextension.DatasetSelectionExtension;
 import org.jfree.data.datasetextension.optional.IterableSelection;
+import org.jfree.data.event.DatasetChangeEvent;
 import org.jfree.data.event.SelectionChangeListener;
-import org.jfree.data.general.Dataset;
 import org.jfree.data.general.PieDataset;
 
 /**
@@ -21,9 +20,10 @@ public class PieDatasetSelectionExtension extends AbstractDatasetSelectionExtens
 
 	/** a generated serial id */
 	private static final long serialVersionUID = -1735271052194147081L;
+
+	/** private ref to the stored dataset to avoid casting same as ({@link AbstractDatasetSelectionExtension#dataset})*/
+	private PieDataset dataset;
 	
-	/** reference to the extended dataset */
-	private final PieDataset dataset;
 	
 	/** storage for the selection attributes of the data items. */
 	private HashMap selectionData;
@@ -34,6 +34,7 @@ public class PieDatasetSelectionExtension extends AbstractDatasetSelectionExtens
 	 * @param dataset
 	 */
 	public PieDatasetSelectionExtension(PieDataset dataset) {
+		super(dataset);
 		this.dataset = dataset;
 		initSelection();
 	}
@@ -46,16 +47,10 @@ public class PieDatasetSelectionExtension extends AbstractDatasetSelectionExtens
 	 * @param initialListener
 	 */
 	public PieDatasetSelectionExtension(PieDataset dataset, SelectionChangeListener initialListener) {
-		this(dataset);
+		super(dataset);
 		addChangeListener(initialListener);
 	}
 	
-	/**
-	 * {@link DatasetExtension#getDataset()} 
-	 */
-	public Dataset getDataset() {
-		return this.dataset;
-	}
 
 	/**
 	 * {@link DatasetSelectionExtension#isSelected(DatasetCursor)}
@@ -96,6 +91,14 @@ public class PieDatasetSelectionExtension extends AbstractDatasetSelectionExtens
 	public void clearSelection() {
 		initSelection();
 	}
+	
+	/**
+	 * a change of the underlying dataset clears the slection and reinitializes it
+	 */
+	public void datasetChanged(DatasetChangeEvent event) {
+		initSelection();
+	}
+	
 	
 	/**
 	 * inits the selection attribute storage and sets all data items to unselected

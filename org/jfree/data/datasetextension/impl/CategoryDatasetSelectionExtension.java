@@ -5,12 +5,11 @@ import java.util.Iterator;
 import org.jfree.data.DefaultKeyedValues2D;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.datasetextension.DatasetCursor;
-import org.jfree.data.datasetextension.DatasetExtension;
 import org.jfree.data.datasetextension.DatasetIterator;
 import org.jfree.data.datasetextension.DatasetSelectionExtension;
 import org.jfree.data.datasetextension.optional.IterableSelection;
+import org.jfree.data.event.DatasetChangeEvent;
 import org.jfree.data.event.SelectionChangeListener;
-import org.jfree.data.general.Dataset;
 
 /**
  * Extends a category dataset with a selection state for each data item. 
@@ -22,8 +21,10 @@ public class CategoryDatasetSelectionExtension extends AbstractDatasetSelectionE
 	/** a generated serial id */
 	private static final long serialVersionUID = 5138359490302459066L;
 
-	/** reference to the extended dataset */
-	private final CategoryDataset dataset;
+	/** private ref to the stored dataset to avoid casting same as ({@link AbstractDatasetSelectionExtension#dataset})*/
+	private CategoryDataset dataset;
+
+	
 	
 	//could improve here by using own bool data structure
 	
@@ -40,6 +41,7 @@ public class CategoryDatasetSelectionExtension extends AbstractDatasetSelectionE
 	 * @param dataset
 	 */
 	public CategoryDatasetSelectionExtension(CategoryDataset dataset) {
+		super(dataset);
 		this.dataset = dataset;
 		initSelection();
 	}
@@ -52,15 +54,8 @@ public class CategoryDatasetSelectionExtension extends AbstractDatasetSelectionE
 	 * @param initialListener
 	 */
 	public CategoryDatasetSelectionExtension(CategoryDataset dataset, SelectionChangeListener initialListener) {
-		this(dataset);
+		super(dataset);
 		addChangeListener(initialListener);
-	}
-	
-	/**
-	 * {@link DatasetExtension#getDataset()} 
-	 */
-	public Dataset getDataset() {
-		return this.dataset;
 	}
 
 	/**
@@ -105,6 +100,14 @@ public class CategoryDatasetSelectionExtension extends AbstractDatasetSelectionE
 	}
 	
 	/**
+	 * a change of the underlying dataset clears the slection and reinitializes it
+	 */
+	public void datasetChanged(DatasetChangeEvent event) {
+		initSelection();
+	}
+	
+	
+	/**
 	 * inits the selection attribute storage and sets all data items to unselected
 	 */
 	private void initSelection() {
@@ -135,7 +138,9 @@ public class CategoryDatasetSelectionExtension extends AbstractDatasetSelectionE
 	public DatasetIterator getSelectionIterator(boolean selected) {
 		return new CategoryDatasetSelectionIterator(selected);
 	}
-
+	
+	
+	
 	
 	/**
 	 * Allows to iterate over all data items or the selected / unselected data items.
@@ -233,5 +238,6 @@ public class CategoryDatasetSelectionExtension extends AbstractDatasetSelectionE
 			return new int[]{-1,-1};
 		}
 	}
+
 	
 }

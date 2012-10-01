@@ -5,12 +5,11 @@ import java.util.Iterator;
 import java.util.List;
 
 import org.jfree.data.datasetextension.DatasetCursor;
-import org.jfree.data.datasetextension.DatasetExtension;
 import org.jfree.data.datasetextension.DatasetIterator;
 import org.jfree.data.datasetextension.DatasetSelectionExtension;
 import org.jfree.data.datasetextension.optional.IterableSelection;
+import org.jfree.data.event.DatasetChangeEvent;
 import org.jfree.data.event.SelectionChangeListener;
-import org.jfree.data.general.Dataset;
 import org.jfree.data.xy.XYDataset;
 
 /**
@@ -23,9 +22,9 @@ public class XYDatasetSelectionExtension extends
 
 	/** a generated serial id */
 	private static final long serialVersionUID = 4859712483757720877L;
-	
-	/** reference to the extended dataset */
-	private final XYDataset dataset;
+
+	/** private ref to the stored dataset to avoid casting same as ({@link AbstractDatasetSelectionExtension#dataset})*/
+	private XYDataset dataset;
 	
 	/** storage for the selection attributes of the data items. */
 	private List[] selectionData;
@@ -36,9 +35,10 @@ public class XYDatasetSelectionExtension extends
 	 * @param dataset
 	 */
 	public XYDatasetSelectionExtension(XYDataset dataset) {
+		super(dataset);
 		this.dataset = dataset;
 		selectionData = new ArrayList[dataset.getSeriesCount()];
-
+		
 		initSelection();
 	}
 
@@ -51,16 +51,18 @@ public class XYDatasetSelectionExtension extends
 	 */
 	public XYDatasetSelectionExtension(XYDataset dataset,
 			SelectionChangeListener initialListener) {
-		this(dataset);
+		super(dataset);
 		addChangeListener(initialListener);
 	}
 
+	
 	/**
-	 * {@link DatasetExtension#getDataset()} 
+	 * a change of the underlying dataset clears the slection and reinitializes it.
 	 */
-	public Dataset getDataset() {
-		return this.dataset;
+	public void datasetChanged(DatasetChangeEvent event) {
+		initSelection();
 	}
+	
 
 	/**
 	 * {@link DatasetSelectionExtension#isSelected(DatasetCursor)}
