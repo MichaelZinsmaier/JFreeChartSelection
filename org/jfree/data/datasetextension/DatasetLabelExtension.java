@@ -1,6 +1,6 @@
 package org.jfree.data.datasetextension;
 
-import org.jfree.data.event.LabelChangeEvent;
+import org.jfree.data.datasetextension.optional.WithChangeListener;
 import org.jfree.data.event.LabelChangeListener;
 
 /**
@@ -10,7 +10,7 @@ import org.jfree.data.event.LabelChangeListener;
  * @author zinsmaie
  *
  */
-public interface DatasetLabelExtension extends DatasetExtension {
+public interface DatasetLabelExtension extends DatasetExtension, WithChangeListener {
 	
 	/** default class for not labeled data items. */
 	public final int NO_LABEL = -1;
@@ -39,26 +39,7 @@ public interface DatasetLabelExtension extends DatasetExtension {
 	 *  
 	 * @param listener
 	 */
-	public void addChangeListener(LabelChangeListener listener);
+	public void addLabelChangeListener(LabelChangeListener listener);
 	
-	/**
-	 * removes a label change listener from the dataset extension<br>
-	 *  
-	 * @param listener
-	 */
-	public void removeChangeListener(LabelChangeListener listener);
 
-    /**
-     * Sets a flag that controls whether or not listeners receive
-     * {@link LabelChangeEvent} notifications.
-     *
-     * @param notify If the flag is set to false the listeners are no longer informed about changes. 
-     *  If the flag is set to true and some changes occurred an event should be triggered. 
-     */
-    public void setNotify(boolean notify);
-    
-    /**
-     * @return true if the notification flag is active 
-     */
-    public boolean isNotify();
 }

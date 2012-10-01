@@ -1,6 +1,6 @@
 package org.jfree.data.datasetextension;
 
-import org.jfree.data.event.SelectionChangeEvent;
+import org.jfree.data.datasetextension.optional.WithChangeListener;
 import org.jfree.data.event.SelectionChangeListener;
 
 /**
@@ -9,7 +9,7 @@ import org.jfree.data.event.SelectionChangeListener;
  * @author zinsmaie
  *
  */
-public interface DatasetSelectionExtension extends DatasetExtension {
+public interface DatasetSelectionExtension extends DatasetExtension, WithChangeListener {
 	
 	/**
 	 * @param cursor specifies the position of the data item
@@ -39,26 +39,6 @@ public interface DatasetSelectionExtension extends DatasetExtension {
 	 *  
 	 * @param listener
 	 */
-	public void addChangeListener(SelectionChangeListener listener);
+	public void addSelectionChangeListener(SelectionChangeListener listener);
 	
-	/**
-	 * removes a label change listener from the dataset extension<br>
-	 *  
-	 * @param listener
-	 */
-	public void removeChangeListener(SelectionChangeListener listener);
-
-    /**
-     * Sets a flag that controls whether or not listeners receive
-     * {@link SelectionChangeEvent} notifications.
-     *
-     * @param notify If the flag is set to false the listeners are no longer informed about changes.
-     *  If the flag is set to true and some changes occurred an event should be triggered. 
-     */
-    public void setNotify(boolean notify);
-    
-    /**
-     * @return true if the notification flag is active 
-     */
-    public boolean isNotify();
 }

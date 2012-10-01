@@ -1,9 +1,12 @@
 package org.jfree.data.datasetextension.impl;
 
+import java.util.EventListener;
+
 import javax.swing.event.EventListenerList;
 
 import org.jfree.data.datasetextension.DatasetExtension;
 import org.jfree.data.datasetextension.DatasetSelectionExtension;
+import org.jfree.data.datasetextension.optional.WithChangeListener;
 import org.jfree.data.event.DatasetChangeListener;
 import org.jfree.data.event.SelectionChangeEvent;
 import org.jfree.data.event.SelectionChangeListener;
@@ -48,23 +51,23 @@ public abstract class AbstractDatasetSelectionExtension implements DatasetSelect
     }
     
     /** 
-     * {@link DatasetSelectionExtension#addChangeListener(org.jfree.data.event.LabelChangeListener)
+     * {@link DatasetSelectionExtension#addSelectionChangeListener(org.jfree.data.event.LabelChangeListener)
      */
-    public void addChangeListener(SelectionChangeListener listener) {
+    public void addSelectionChangeListener(SelectionChangeListener listener) {
     	this.notify = true;
    		this.listenerList.add(SelectionChangeListener.class, listener);
     }
 
     /**
-	 * {@link DatasetSelectionExtension#removeChangeListener(org.jfree.data.event.LabelChangeListener)
+	 * {@link WithChangeListener#removeChangeListener(EventListener))
      */
-    public void removeChangeListener(SelectionChangeListener listener) {
+    public void removeChangeListener(EventListener listener) {
    		this.listenerList.remove(SelectionChangeListener.class, listener);
     }
 
 
     /**
-     * {@link DatasetSelectionExtension#setNotify(boolean)}
+     * {@link WithChangeListener#setNotify(boolean)}
      */
     public void setNotify(boolean notify) {
     	if (this.notify != notify) {
@@ -82,7 +85,7 @@ public abstract class AbstractDatasetSelectionExtension implements DatasetSelect
    }
    
     /**
-     * {@link DatasetSelectionExtension#isNotify()}
+     * {@link WithChangeListener#isNotify()}
      */
    public boolean isNotify() {
 	   return this.notify;
