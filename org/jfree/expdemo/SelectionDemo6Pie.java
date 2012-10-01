@@ -1,8 +1,17 @@
 package org.jfree.expdemo;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 
+import javax.swing.BorderFactory;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSplitPane;
+import javax.swing.JTable;
+import javax.swing.border.EmptyBorder;
+import javax.swing.border.TitledBorder;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumnModel;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
@@ -13,6 +22,7 @@ import org.jfree.chart.panel.selectionhandler.FreeRegionSelectionHandler;
 import org.jfree.chart.panel.selectionhandler.MouseClickSelectionHandler;
 import org.jfree.chart.panel.selectionhandler.RegionSelectionHandler;
 import org.jfree.chart.plot.PiePlot;
+import org.jfree.data.datasetextension.DatasetIterator;
 import org.jfree.data.datasetextension.DatasetSelectionExtension;
 import org.jfree.data.datasetextension.impl.DatasetExtensionManager;
 import org.jfree.data.datasetextension.impl.PieCursor;
@@ -29,13 +39,33 @@ import org.jfree.ui.RefineryUtilities;
 /*
  * based on PieChartDemo2
  */
-public class SelectionDemo6Pie extends ApplicationFrame {
+public class SelectionDemo6Pie extends ApplicationFrame implements SelectionChangeListener {
 
+	JTable table;
+
+	DefaultTableModel model;
+
+	PieDataset dataset;
+
+	
 	public SelectionDemo6Pie(String title) {
 		super(title);
 		JPanel chartPanel = createDemoPanel();
 		chartPanel.setPreferredSize(new java.awt.Dimension(700, 500));
-		setContentPane(chartPanel);
+
+		JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+		split.add(chartPanel);
+
+		this.model = new DefaultTableModel(new String[] { "section", "value:"}, 0);
+		this.table = new JTable(this.model);
+		TableColumnModel tcm = this.table.getColumnModel();
+		JPanel p = new JPanel(new BorderLayout());
+		JScrollPane scroller = new JScrollPane(this.table);
+		p.add(scroller);
+		p.setBorder(BorderFactory.createCompoundBorder(new TitledBorder(
+				"Selected Items: "), new EmptyBorder(4, 4, 4, 4)));
+		split.add(p);
+		setContentPane(split);
 	}
 
 	private static PieDataset createDataset() {
@@ -76,9 +106,9 @@ public class SelectionDemo6Pie extends ApplicationFrame {
 		return chart;
 	}
 
-	public static JPanel createDemoPanel() {
-		final PieDataset data = createDataset();
-		JFreeChart chart = createChart(data);
+	public JPanel createDemoPanel() {
+		dataset = createDataset();
+		JFreeChart chart = createChart(dataset);
 		ChartPanel panel = new ChartPanel(chart);
 		panel.setMouseWheelEnabled(true);
 
@@ -90,7 +120,8 @@ public class SelectionDemo6Pie extends ApplicationFrame {
 		// extend the dataset with selection storage
 		final DatasetExtensionManager dExManager = new DatasetExtensionManager();
 		final DatasetSelectionExtension ext = new PieDatasetSelectionExtension(
-				data);
+				dataset);
+		ext.addChangeListener(this);
 		dExManager.registerDatasetExtension(ext);
 
 		// extend the plot
@@ -99,12 +130,12 @@ public class SelectionDemo6Pie extends ApplicationFrame {
 
 		ext.addChangeListener(new SelectionChangeListener() {
 			public void selectionChanged(SelectionChangeEvent event) {				
-				for (int i = 0; i < data.getItemCount(); i++) {
-					cursor.setPosition(data.getKey(i));
+				for (int i = 0; i < dataset.getItemCount(); i++) {
+					cursor.setPosition(dataset.getKey(i));
 					if (event.getSelectionExtension().isSelected(cursor)) {
-						p.setExplodePercent(cursor.getKey(), 0.15);
+						p.setExplodePercent(cursor.key, 0.15);
 					} else {
-						p.setExplodePercent(cursor.getKey(), 0.0);
+						p.setExplodePercent(cursor.key, 0.0);
 					}
 				}
 				
@@ -112,8 +143,22 @@ public class SelectionDemo6Pie extends ApplicationFrame {
 		});
 		
 		panel.setSelectionManager(new EntitySelectionManager(panel,
-				new Dataset[] { data }, dExManager));
+				new Dataset[] { dataset }, dExManager));
 		return panel;
+	}
+	
+	public void selectionChanged(SelectionChangeEvent event) {
+    	while (this.model.getRowCount() > 0) {
+            this.model.removeRow(0);
+        }
+
+    	PieDatasetSelectionExtension ext = (PieDatasetSelectionExtension)event.getSelectionExtension(); 
+    	DatasetIterator iter = ext.getSelectionIterator(true);
+    	
+    	while (iter.hasNext()) {
+    		PieCursor dc = (PieCursor)iter.nextCursor();
+    		this.model.addRow(new Object[] {dc.key, dataset.getValue(dc.key)});
+    	}
 	}
 
 	public static void main(String[] args) {

@@ -4,20 +4,20 @@ import org.jfree.data.datasetextension.DatasetCursor;
 
 public class CategoryCursor implements DatasetCursor {
 
-	private Comparable rowKey;
-	private Comparable columnKey;
+	public Comparable rowKey;
+	public Comparable columnKey;
+
+	public CategoryCursor() {
+	}
 	
-	public void setPosition(Comparable rowKey, Comparable columnKey) {
+	public CategoryCursor(Comparable rowKey, Comparable columnKey) {
 		this.rowKey = rowKey;
 		this.columnKey = columnKey;
 	}
-	
-	public Comparable getRowKey() {
-		return this.rowKey;
-	}
-	
-	public Comparable getColumnKey() {
-		return this.columnKey;
+
+	public void setPosition(Comparable rowKey, Comparable columnKey) {
+		this.rowKey = rowKey;
+		this.columnKey = columnKey;
 	}
 	
 }

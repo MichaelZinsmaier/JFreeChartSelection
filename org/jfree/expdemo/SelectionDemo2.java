@@ -36,12 +36,13 @@ import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.AbstractRenderer;
 import org.jfree.chart.renderer.contribution.DefaultPaintIRS;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
+import org.jfree.data.datasetextension.DatasetIterator;
 import org.jfree.data.datasetextension.DatasetSelectionExtension;
 import org.jfree.data.datasetextension.impl.DatasetExtensionManager;
 import org.jfree.data.datasetextension.impl.XYCursor;
 import org.jfree.data.datasetextension.impl.XYDatasetSelectionExtension;
-import org.jfree.data.event.DatasetChangeEvent;
-import org.jfree.data.event.DatasetChangeListener;
+import org.jfree.data.event.SelectionChangeEvent;
+import org.jfree.data.event.SelectionChangeListener;
 import org.jfree.data.general.Dataset;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
@@ -53,7 +54,7 @@ import org.jfree.ui.RefineryUtilities;
 /**
  * A demo scatter plot.
  */
-public class SelectionDemo2 extends ApplicationFrame implements DatasetChangeListener {
+public class SelectionDemo2 extends ApplicationFrame implements SelectionChangeListener {
 
     JTable table;
 
@@ -74,7 +75,6 @@ public class SelectionDemo2 extends ApplicationFrame implements DatasetChangeLis
         JFreeChart chart = chartPanel.getChart();
         XYPlot plot = (XYPlot) chart.getPlot();
         this.dataset = (XYSeriesCollection) plot.getDataset();
-        this.dataset.addChangeListener(this);
         JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
         split.add(chartPanel);
 
@@ -93,31 +93,28 @@ public class SelectionDemo2 extends ApplicationFrame implements DatasetChangeLis
         setContentPane(split);
     }
 
-     /**
-     * The dataset changed, so we announce that the table model changed
-     * too (even if maybe it didn't - demo shortcut).
-     *
-     * @param event  ignored.
-     */
-    public void datasetChanged(DatasetChangeEvent event) {
-        while (this.model.getRowCount() > 0) {
+	/**
+	 * The selection changed, so we change the table model
+	 * 
+	 * @param event
+	 */
+	public void selectionChanged(SelectionChangeEvent event) {
+    	while (this.model.getRowCount() > 0) {
             this.model.removeRow(0);
         }
-        int seriesCount = this.dataset.getSeriesCount();
-        for (int s = 0; s < seriesCount; s++) {
-            int itemCount = this.dataset.getItemCount(s);
-            for (int i = 0; i < itemCount; i++) {
-//IMPL NEEDED            	
-//                if (!this.dataset.isSelected(s, i)) {
-//                    continue;
-//                }
-//                Comparable seriesKey = this.dataset.getSeriesKey(s);
-//                Number x = this.dataset.getX(s, i);
-//                Number y = this.dataset.getY(s, i);
-//                this.model.addRow(new Object[] { seriesKey, new Integer(i), x,
-//                    y});
-            }
-        }
+
+    	XYDatasetSelectionExtension ext = (XYDatasetSelectionExtension)event.getSelectionExtension(); 
+    	DatasetIterator iter = ext.getSelectionIterator(true);
+    	
+    	while (iter.hasNext()) {
+    		XYCursor dc = (XYCursor)iter.nextCursor();
+
+    		Comparable seriesKey = this.dataset.getSeriesKey(dc.series);
+            Number x = this.dataset.getX(dc.series, dc.item);
+            Number y = this.dataset.getX(dc.series, dc.item);
+    		
+    		this.model.addRow(new Object[] { seriesKey, new Integer(dc.item), x,  y});
+    	}
     }
 
    private static JFreeChart createChart(XYDataset dataset) {
@@ -184,7 +181,7 @@ public class SelectionDemo2 extends ApplicationFrame implements DatasetChangeLis
      *
      * @return A panel.
      */
-    public static JPanel createDemoPanel() {
+    public JPanel createDemoPanel() {
     	XYDataset data = createDataset();
         JFreeChart chart = createChart(data);
         ChartPanel panel = new ChartPanel(chart);
@@ -199,7 +196,8 @@ public class SelectionDemo2 extends ApplicationFrame implements DatasetChangeLis
         
         //extend the dataset with selection storage
         DatasetExtensionManager dExManager = new DatasetExtensionManager();
-        final DatasetSelectionExtension ext = new XYDatasetSelectionExtension(data, chart.getPlot()); 
+        final DatasetSelectionExtension ext = new XYDatasetSelectionExtension(data, chart.getPlot());
+        ext.addChangeListener(this);
         dExManager.registerDatasetExtension(ext);
                 
         //extend the renderer

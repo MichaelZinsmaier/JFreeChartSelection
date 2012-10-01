@@ -9,14 +9,13 @@ import org.jfree.data.event.SelectionChangeListener;
 public abstract class AbstractDatasetSelectionExtension implements DatasetSelectionExtension {
 
     /** Storage for registered listeners. */
-    private transient EventListenerList listenerList;
+    private transient EventListenerList listenerList = new EventListenerList();
 
     private boolean notify;
     private boolean dirty;
     
     public void addChangeListener(SelectionChangeListener listener) {
     	this.notify = true;
-    	this.listenerList = new EventListenerList();
    		this.listenerList.add(SelectionChangeListener.class, listener);
     }
 
