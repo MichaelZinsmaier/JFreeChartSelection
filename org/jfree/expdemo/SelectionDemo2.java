@@ -158,7 +158,7 @@ public class SelectionDemo2 extends ApplicationFrame implements SelectionChangeL
 		IRSUtilities.setSelectedItemFillPaint(r, ext, Color.white);
 		
 		//register plot as selection change listener
-		ext.addChangeListener(plot);
+		ext.addSelectionChangeListener(plot);
 		
         return chart;
     }
@@ -187,7 +187,7 @@ public class SelectionDemo2 extends ApplicationFrame implements SelectionChangeL
 		XYDataset dataset = createDataset();
 		//extend dataset and add selection change listener for the demo
 		DatasetSelectionExtension datasetExtension = new XYDatasetSelectionExtension(dataset);	
-		datasetExtension.addChangeListener(this);
+		datasetExtension.addSelectionChangeListener(this);
 		
 		//standard setup
 		JFreeChart chart = createChart(dataset, datasetExtension);
