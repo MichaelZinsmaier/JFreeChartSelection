@@ -107,13 +107,10 @@ public class FreeRegionSelectionHandler extends RegionSelectionHandler {
 		if (dataArea.contains(e.getPoint())) {
 				SelectionManager selectionManager = panel.getSelectionManager();
 				if (selectionManager != null) {
-					// NOT IMPLEMENTED
-					
-					// if (!e.isShiftDown()) {
-					// s.clearSelection();
-					// chart.setNotify(true);
-					// }
-
+					if (!e.isShiftDown()) {
+						   selectionManager.clearSelection();
+						   panel.getChart().fireChartChanged();
+					}
 					Point pt = e.getPoint();
 					this.selectionPath.moveTo(pt.getX(), pt.getY());
 					this.lastPoint = new Point(pt);
@@ -156,6 +153,7 @@ public class FreeRegionSelectionHandler extends RegionSelectionHandler {
 		// do something with the selection shape
 		if (selectionManager != null) {
 			selectionManager.select(this.selectionPath);
+			panel.getChart().fireChartChanged();
 		}
 
 		panel.setSelectionShape(null);

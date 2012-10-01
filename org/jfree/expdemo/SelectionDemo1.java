@@ -8,6 +8,8 @@
 package org.jfree.expdemo;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Paint;
 
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
@@ -25,7 +27,14 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.panel.selectionhandler.FreeRegionSelectionHandler;
 import org.jfree.chart.panel.selectionhandler.RegionSelectionHandler;
 import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.renderer.AbstractRenderer;
+import org.jfree.chart.renderer.contribution.DefaultPaintIRS;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
+import org.jfree.data.datasetextension.DatasetSelectionExtension;
+import org.jfree.data.datasetextension.impl.DatasetExtensionManager;
+import org.jfree.data.datasetextension.impl.XYCursor;
+import org.jfree.data.datasetextension.impl.XYDatasetSelectionExtension;
+import org.jfree.data.general.Dataset;
 import org.jfree.data.general.DatasetChangeEvent;
 import org.jfree.data.general.DatasetChangeListener;
 import org.jfree.data.selection.EntitySelectionManager;
@@ -200,17 +209,37 @@ public class SelectionDemo1 extends ApplicationFrame
      * @return A panel.
      */
     public static JPanel createDemoPanel() {
-        JFreeChart chart = createChart(createDataset());
+    	XYDataset data = createDataset();
+        JFreeChart chart = createChart(data);
         ChartPanel panel = new ChartPanel(chart);
         panel.setFillZoomRectangle(true);
         panel.setMouseWheelEnabled(true);
 
 
-
+        //extend the panel with a selection handler
         RegionSelectionHandler selectionHandler = new FreeRegionSelectionHandler();
-        //selectionHandler.setModifier(InputEvent.SHIFT_MASK);
         panel.addMouseHandler(selectionHandler);
-        panel.setSelectionManager(new EntitySelectionManager(panel));
+        
+        //extend the dataset with selection storage
+        DatasetExtensionManager dExManager = new DatasetExtensionManager();
+        final DatasetSelectionExtension ext = new XYDatasetSelectionExtension(data); 
+        dExManager.registerDatasetExtension(ext);
+                
+        //extend the renderer
+        final XYCursor cursor = new XYCursor();
+        AbstractRenderer renderer = (AbstractRenderer)((XYPlot)chart.getPlot()).getRenderer();
+        renderer.setPaintIRS(new DefaultPaintIRS(renderer) {
+        	public Paint getItemFillPaint(int row, int column) {
+        		cursor.setPosition(row, column);
+        		if (ext.isSelected(cursor)) {
+        			return Color.white;
+        		} else {
+        			return super.getItemFillPaint(row, column);
+        		}
+        	}
+        });
+        
+        panel.setSelectionManager(new EntitySelectionManager(panel, new Dataset[]{data}, dExManager));
         return panel;
     }
 
