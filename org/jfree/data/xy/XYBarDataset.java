@@ -49,8 +49,8 @@
 
 package org.jfree.data.xy;
 
-import org.jfree.data.general.DatasetChangeEvent;
-import org.jfree.data.general.DatasetChangeListener;
+import org.jfree.data.event.DatasetChangeEvent;
+import org.jfree.data.event.DatasetChangeListener;
 import org.jfree.util.PublicCloneable;
 
 /**

@@ -1,4 +1,4 @@
-package org.jfree.data.general;
+package org.jfree.data.event;
 
 import java.util.EventObject;
 

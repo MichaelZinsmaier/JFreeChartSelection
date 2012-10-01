@@ -1,7 +1,7 @@
 package org.jfree.data.datasetextension;
 
-import org.jfree.data.general.SelectionChangeEvent;
-import org.jfree.data.general.SelectionChangeListener;
+import org.jfree.data.event.SelectionChangeEvent;
+import org.jfree.data.event.SelectionChangeListener;
 
 public interface DatasetSelectionExtension extends DatasetExtension {
 	

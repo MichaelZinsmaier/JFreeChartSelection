@@ -3,8 +3,8 @@ package org.jfree.data.datasetextension.impl;
 import javax.swing.event.EventListenerList;
 
 import org.jfree.data.datasetextension.DatasetSelectionExtension;
-import org.jfree.data.general.SelectionChangeEvent;
-import org.jfree.data.general.SelectionChangeListener;
+import org.jfree.data.event.SelectionChangeEvent;
+import org.jfree.data.event.SelectionChangeListener;
 
 public abstract class AbstractDatasetSelectionExtension implements DatasetSelectionExtension {
 

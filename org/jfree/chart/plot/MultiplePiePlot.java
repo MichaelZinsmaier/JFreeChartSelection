@@ -83,7 +83,7 @@ import org.jfree.chart.event.PlotChangeEvent;
 import org.jfree.chart.title.TextTitle;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.category.CategoryToPieDataset;
-import org.jfree.data.general.DatasetChangeEvent;
+import org.jfree.data.event.DatasetChangeEvent;
 import org.jfree.data.general.DatasetUtilities;
 import org.jfree.data.general.PieDataset;
 import org.jfree.io.SerialUtilities;

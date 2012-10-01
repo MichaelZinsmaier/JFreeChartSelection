@@ -44,8 +44,8 @@ import java.util.Date;
 
 import org.jfree.chart.axis.SymbolAxis;
 import org.jfree.chart.renderer.xy.XYBarRenderer;
-import org.jfree.data.general.DatasetChangeEvent;
-import org.jfree.data.general.DatasetChangeListener;
+import org.jfree.data.event.DatasetChangeEvent;
+import org.jfree.data.event.DatasetChangeListener;
 import org.jfree.data.time.TimePeriod;
 import org.jfree.data.xy.AbstractXYDataset;
 import org.jfree.data.xy.IntervalXYDataset;

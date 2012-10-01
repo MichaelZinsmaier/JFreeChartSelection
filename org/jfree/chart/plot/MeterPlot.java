@@ -117,7 +117,7 @@ import org.jfree.chart.LegendItemCollection;
 import org.jfree.chart.event.PlotChangeEvent;
 import org.jfree.chart.util.ResourceBundleWrapper;
 import org.jfree.data.Range;
-import org.jfree.data.general.DatasetChangeEvent;
+import org.jfree.data.event.DatasetChangeEvent;
 import org.jfree.data.general.ValueDataset;
 import org.jfree.io.SerialUtilities;
 import org.jfree.text.TextUtilities;

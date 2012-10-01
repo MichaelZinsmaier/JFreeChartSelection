@@ -58,6 +58,7 @@ package org.jfree.data.general;
 
 import java.util.List;
 
+import org.jfree.data.event.DatasetChangeEvent;
 import org.jfree.data.xy.AbstractIntervalXYDataset;
 import org.jfree.data.xy.IntervalXYDataset;
 import org.jfree.data.xy.OHLCDataset;

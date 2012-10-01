@@ -62,8 +62,8 @@ import java.util.List;
 import org.jfree.data.KeyedObjects2D;
 import org.jfree.data.Range;
 import org.jfree.data.RangeInfo;
+import org.jfree.data.event.DatasetChangeEvent;
 import org.jfree.data.general.AbstractDataset;
-import org.jfree.data.general.DatasetChangeEvent;
 import org.jfree.util.PublicCloneable;
 
 /**

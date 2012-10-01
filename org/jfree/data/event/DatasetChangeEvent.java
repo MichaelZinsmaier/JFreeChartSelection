@@ -24,9 +24,9 @@
  * [Oracle and Java are registered trademarks of Oracle and/or its affiliates. 
  * Other names may be trademarks of their respective owners.]
  *
- * --------------------------
- * DatasetChangeListener.java
- * --------------------------
+ * -----------------------
+ * DatasetChangeEvent.java
+ * -----------------------
  * (C) Copyright 2000-2008, by Object Refinery Limited.
  *
  * Original Author:  David Gilbert (for Object Refinery Limited);
@@ -35,28 +35,54 @@
  * Changes (from 24-Aug-2001)
  * --------------------------
  * 24-Aug-2001 : Added standard source header. Fixed DOS encoding problem (DG);
- * 15-Oct-2001 : Moved to new package (com.jrefinery.data.*) (DG);
+ * 15-Oct-2001 : Move to new package (com.jrefinery.data.*) (DG);
  * 22-Oct-2001 : Renamed DataSource.java --> Dataset.java etc. (DG);
- * 07-Aug-2002 : Now extends EventListener (DG);
+ * 11-Jun-2002 : Separated the event source from the dataset to cover the case
+ *               where the dataset is changed to null in the Plot class.
+ *               Updated Javadocs (DG);
  * 04-Oct-2002 : Fixed errors reported by Checkstyle (DG);
+ * 05-Oct-2004 : Minor Javadoc updates (DG);
  *
  */
 
-package org.jfree.data.general;
+package org.jfree.data.event;
 
-import java.util.EventListener;
+import org.jfree.data.general.Dataset;
 
 /**
- * The interface that must be supported by classes that wish to receive
- * notification of changes to a dataset.
+ * A change event that encapsulates information about a change to a dataset.
  */
-public interface DatasetChangeListener extends EventListener {
+public class DatasetChangeEvent extends java.util.EventObject {
 
     /**
-     * Receives notification of an dataset change event.
-     *
-     * @param event  information about the event.
+     * The dataset that generated the change event.
      */
-    public void datasetChanged(DatasetChangeEvent event);
+    private Dataset dataset;
+
+    /**
+     * Constructs a new event.  The source is either the dataset or the
+     * {@link org.jfree.chart.plot.Plot} class.  The dataset can be
+     * <code>null</code> (in this case the source will be the
+     * {@link org.jfree.chart.plot.Plot} class).
+     *
+     * @param source  the source of the event.
+     * @param dataset  the dataset that generated the event (<code>null</code>
+     *                 permitted).
+     */
+    public DatasetChangeEvent(Object source, Dataset dataset) {
+        super(source);
+        this.dataset = dataset;
+    }
+
+    /**
+     * Returns the dataset that generated the event.  Note that the dataset
+     * may be <code>null</code> since adding a <code>null</code> dataset to a
+     * plot will generated a change event.
+     *
+     * @return The dataset (possibly <code>null</code>).
+     */
+    public Dataset getDataset() {
+        return this.dataset;
+    }
 
 }
