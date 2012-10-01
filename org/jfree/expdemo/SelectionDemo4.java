@@ -27,8 +27,8 @@ import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.panel.selectionhandler.EntitySelectionManager;
+import org.jfree.chart.panel.selectionhandler.FreeRegionSelectionHandler;
 import org.jfree.chart.panel.selectionhandler.MouseClickSelectionHandler;
-import org.jfree.chart.panel.selectionhandler.RectangularRegionSelectionHandler;
 import org.jfree.chart.panel.selectionhandler.RegionSelectionHandler;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
@@ -172,7 +172,7 @@ public class SelectionDemo4 extends ApplicationFrame implements
 		panel.removeMouseHandler(panel.getZoomHandler());
 
 		// extend the panel with a selection handler
-		RegionSelectionHandler selectionHandler = new RectangularRegionSelectionHandler();
+		RegionSelectionHandler selectionHandler = new FreeRegionSelectionHandler();
 		panel.addMouseHandler(selectionHandler);
 		panel.addMouseHandler(new MouseClickSelectionHandler());
 
@@ -198,8 +198,9 @@ public class SelectionDemo4 extends ApplicationFrame implements
 			}
 		});
 
-		panel.setSelectionManager(new EntitySelectionManager(panel,
-				new Dataset[] { dataset }, dExManager));
+		EntitySelectionManager selectionManager = new EntitySelectionManager(panel, new Dataset[] { dataset }, dExManager);
+		selectionManager.setIntersectionSelection(true);
+		panel.setSelectionManager(selectionManager);
 		return panel;
 	}
 

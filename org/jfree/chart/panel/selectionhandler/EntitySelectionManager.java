@@ -21,7 +21,8 @@ import org.jfree.data.datasetextension.impl.XYCursor;
 import org.jfree.data.general.Dataset;
 
 public class EntitySelectionManager implements SelectionManager {
-
+	
+	private boolean intersectionMode;
 	private final ChartPanel renderSourcePanel;
 	private final DatasetExtensionManager extensionManager;
 	private final Dataset[] datasets;
@@ -37,6 +38,7 @@ public class EntitySelectionManager implements SelectionManager {
 		this.datasets = datasets;
 		// initialize an extension manager without registered extensions
 		this.extensionManager = new DatasetExtensionManager();
+		this.intersectionMode = false;
 	}
 
 	public EntitySelectionManager(ChartPanel renderSourcePanel,
@@ -46,6 +48,11 @@ public class EntitySelectionManager implements SelectionManager {
 		// set an extension manager that may manager helper objects to extend
 		// old datasets
 		this.extensionManager = extensionManager;
+		this.intersectionMode = false;
+	}
+	
+	public void setIntersectionSelection(boolean on) {
+		this.intersectionMode = on;
 	}
 
 	public void select(double x, double y) {
@@ -60,7 +67,6 @@ public class EntitySelectionManager implements SelectionManager {
 				Object o = iter.next();
 
 				if (o instanceof DataItemEntity) {
-
 					DataItemEntity e = (DataItemEntity) o;
 
 					// simple check if the entity shape area contains the point
@@ -89,22 +95,33 @@ public class EntitySelectionManager implements SelectionManager {
 					if (o instanceof DataItemEntity) {
 
 						DataItemEntity e = (DataItemEntity) o;
-						boolean covered = false;
+						boolean match = false;
 
 						if (e.getArea() instanceof Rectangle2D) {
-							// use fast rectangle to rectangle test
-							covered = selection.contains((Rectangle2D) e
-									.getArea());
+							Rectangle2D entityRect = (Rectangle2D) e.getArea();
+							// use fast rectangle to rectangle test							
+							if (this.intersectionMode) {
+								match = selection.intersects(entityRect);
+							} else {
+								match = selection.contains(entityRect);
+							}
 						} else {
 							// general shape test
 							Area selectionShape = new Area(selection);
 							Area entityShape = new Area(e.getArea());
 
-							entityShape.subtract(selectionShape);
-							covered = entityShape.isEmpty();
+							if (this.intersectionMode) {
+								//test if the shapes intersect
+								entityShape.intersect(selectionShape);
+								match = !entityShape.isEmpty();
+							} else {
+								//test if the entity shape is completely covered by the selection
+								entityShape.subtract(selectionShape);
+								match = entityShape.isEmpty();			
+							}
 						}
 
-						if (covered) {
+						if (match) {
 							select(e);
 						}
 					}
@@ -129,16 +146,22 @@ public class EntitySelectionManager implements SelectionManager {
 					Object o = iter.next();
 
 					if (o instanceof DataItemEntity) {
-
 						DataItemEntity e = (DataItemEntity) o;
-
 						Area selectionShape = new Area(selection);
 						Area entityShape = new Area(e.getArea());
 
-						entityShape.subtract(selectionShape);
-
-						if (entityShape.isEmpty()) {
-							select(e);
+						if (this.intersectionMode) {
+							//test if the shapes intersect
+							entityShape.intersect(selectionShape);
+							if (!entityShape.isEmpty()) {
+								select(e);
+							}
+						} else {
+							//test if the entity shape is completely covered by the selection
+							entityShape.subtract(selectionShape);
+							if (entityShape.isEmpty()) {
+								select(e);
+							}							
 						}
 					}
 				}
