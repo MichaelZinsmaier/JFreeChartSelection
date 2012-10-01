@@ -32,7 +32,6 @@ import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.AbstractRenderer;
 import org.jfree.chart.renderer.contribution.DefaultPaintIRS;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
-import org.jfree.data.datasetextension.DatasetSelectionExtension;
 import org.jfree.data.datasetextension.impl.DatasetExtensionManager;
 import org.jfree.data.datasetextension.impl.XYCursor;
 import org.jfree.data.datasetextension.impl.XYDatasetSelectionExtension;
@@ -224,7 +223,7 @@ public class SelectionDemo1 extends ApplicationFrame
         
         //extend the dataset with selection storage
         DatasetExtensionManager dExManager = new DatasetExtensionManager();
-        final DatasetSelectionExtension ext = new XYDatasetSelectionExtension(data); 
+        final XYDatasetSelectionExtension ext = new XYDatasetSelectionExtension(data, chart.getPlot()); 
         dExManager.registerDatasetExtension(ext);
                 
         //extend the renderer

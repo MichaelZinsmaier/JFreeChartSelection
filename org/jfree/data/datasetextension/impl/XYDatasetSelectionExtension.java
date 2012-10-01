@@ -4,13 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.jfree.data.datasetextension.DatasetCursor;
-import org.jfree.data.datasetextension.DatasetSelectionExtension;
 import org.jfree.data.general.Dataset;
+import org.jfree.data.general.SelectionChangeListener;
 import org.jfree.data.xy.XYDataset;
 
 //TODO incomplete implementation missing handler for dataset changes ...
 
-public class XYDatasetSelectionExtension implements DatasetSelectionExtension {
+public class XYDatasetSelectionExtension extends AbstractDatasetSelectionExtension {
 
 	private final XYDataset dataset;
 	private List[] selectionData;
@@ -20,6 +20,11 @@ public class XYDatasetSelectionExtension implements DatasetSelectionExtension {
 		selectionData = new ArrayList[dataset.getSeriesCount()];
 		
 		initSelection();
+	}
+
+	public XYDatasetSelectionExtension(XYDataset dataset, SelectionChangeListener initialListener) {
+		this(dataset);
+		addChangeListener(initialListener);
 	}
 	
 	public Dataset getDataset() {
@@ -46,11 +51,12 @@ public class XYDatasetSelectionExtension implements DatasetSelectionExtension {
 			//anything else is an implementation error
 			XYCursor c = (XYCursor) cursor;
 			selectionData[c.getSeries()].set(c.getItem(), new Boolean(selected));
+			notifiyIfRequired();
 		} 
 	}
 
 	public void clearSelection() {
-		initSelection();		
+		initSelection();	
 	}
 	
 	private void initSelection() {
@@ -60,6 +66,7 @@ public class XYDatasetSelectionExtension implements DatasetSelectionExtension {
 				selectionData[i].add(new Boolean(false));
 			}
 		}
+		notifiyIfRequired();
 	}
 
 

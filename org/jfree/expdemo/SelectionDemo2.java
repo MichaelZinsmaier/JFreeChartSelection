@@ -199,7 +199,7 @@ public class SelectionDemo2 extends ApplicationFrame implements DatasetChangeLis
         
         //extend the dataset with selection storage
         DatasetExtensionManager dExManager = new DatasetExtensionManager();
-        final DatasetSelectionExtension ext = new XYDatasetSelectionExtension(data); 
+        final DatasetSelectionExtension ext = new XYDatasetSelectionExtension(data, chart.getPlot()); 
         dExManager.registerDatasetExtension(ext);
                 
         //extend the renderer

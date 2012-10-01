@@ -107,15 +107,14 @@ public class FreeRegionSelectionHandler extends RegionSelectionHandler {
 		ChartPanel panel = (ChartPanel) e.getSource();
 		Rectangle2D dataArea = panel.getScreenDataArea();
 		if (dataArea.contains(e.getPoint())) {
-				SelectionManager selectionManager = panel.getSelectionManager();
-				if (selectionManager != null) {
-					if (!e.isShiftDown()) {
-						   selectionManager.clearSelection();
-						   panel.getChart().fireChartChanged();
-					}
-					Point pt = e.getPoint();
-					this.selectionPath.moveTo(pt.getX(), pt.getY());
-					this.lastPoint = new Point(pt);
+			SelectionManager selectionManager = panel.getSelectionManager();
+			if (selectionManager != null) {
+				if (!e.isShiftDown()) {
+					selectionManager.clearSelection();
+				}
+				Point pt = e.getPoint();
+				this.selectionPath.moveTo(pt.getX(), pt.getY());
+				this.lastPoint = new Point(pt);
 			}
 		}
 	}
@@ -155,7 +154,6 @@ public class FreeRegionSelectionHandler extends RegionSelectionHandler {
 		// do something with the selection shape
 		if (selectionManager != null) {
 			selectionManager.select(this.selectionPath);
-			panel.getChart().fireChartChanged();
 		}
 
 		panel.setSelectionShape(null);

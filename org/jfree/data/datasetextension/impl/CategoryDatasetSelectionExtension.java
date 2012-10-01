@@ -3,12 +3,12 @@ package org.jfree.data.datasetextension.impl;
 import org.jfree.data.DefaultKeyedValues2D;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.datasetextension.DatasetCursor;
-import org.jfree.data.datasetextension.DatasetSelectionExtension;
 import org.jfree.data.general.Dataset;
+import org.jfree.data.general.SelectionChangeListener;
 
 //TODO incomplete implementation missing handler for dataset changes ...
 
-public class CategoryDatasetSelectionExtension implements DatasetSelectionExtension {
+public class CategoryDatasetSelectionExtension extends AbstractDatasetSelectionExtension {
 
 	private final CategoryDataset dataset;
 	
@@ -20,6 +20,11 @@ public class CategoryDatasetSelectionExtension implements DatasetSelectionExtens
 	public CategoryDatasetSelectionExtension(CategoryDataset dataset) {
 		this.dataset = dataset;
 		initSelection();
+	}
+	
+	public CategoryDatasetSelectionExtension(CategoryDataset dataset, SelectionChangeListener initialListener) {
+		this(dataset);
+		addChangeListener(initialListener);
 	}
 	
 	public Dataset getDataset() {
@@ -50,11 +55,12 @@ public class CategoryDatasetSelectionExtension implements DatasetSelectionExtens
 			} else {
 				selectionData.setValue(FALSE, c.getRowKey(), c.getColumnKey());
 			}
+			notifiyIfRequired();
 		} 
 	}
 
 	public void clearSelection() {
-		initSelection();		
+		initSelection();
 	}
 	
 	private void initSelection() {
@@ -66,6 +72,7 @@ public class CategoryDatasetSelectionExtension implements DatasetSelectionExtens
 				}
 			}
 		}
+		notifiyIfRequired();
 	}
 
 }

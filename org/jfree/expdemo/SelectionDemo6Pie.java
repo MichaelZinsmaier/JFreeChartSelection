@@ -7,8 +7,6 @@ import javax.swing.JPanel;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.event.ChartChangeEvent;
-import org.jfree.chart.event.ChartChangeListener;
 import org.jfree.chart.labels.StandardPieSectionLabelGenerator;
 import org.jfree.chart.panel.selectionhandler.EntitySelectionManager;
 import org.jfree.chart.panel.selectionhandler.FreeRegionSelectionHandler;
@@ -22,6 +20,8 @@ import org.jfree.data.datasetextension.impl.PieDatasetSelectionExtension;
 import org.jfree.data.general.Dataset;
 import org.jfree.data.general.DefaultPieDataset;
 import org.jfree.data.general.PieDataset;
+import org.jfree.data.general.SelectionChangeEvent;
+import org.jfree.data.general.SelectionChangeListener;
 import org.jfree.ui.ApplicationFrame;
 import org.jfree.ui.RefineryUtilities;
 
@@ -30,8 +30,6 @@ import org.jfree.ui.RefineryUtilities;
  * based on PieChartDemo2
  */
 public class SelectionDemo6Pie extends ApplicationFrame {
-
-	private static boolean boolLock = true;
 
 	public SelectionDemo6Pie(String title) {
 		super(title);
@@ -99,28 +97,20 @@ public class SelectionDemo6Pie extends ApplicationFrame {
 		final PieCursor cursor = new PieCursor();
 		final PiePlot p = (PiePlot) chart.getPlot();
 
-		chart.addChangeListener(new ChartChangeListener() {
-			public void chartChanged(ChartChangeEvent event) {
-
-				if (boolLock) {
-					boolLock = false;
-					{
-						for (int i = 0; i < data.getItemCount(); i++) {
-							cursor.setPosition(data.getKey(i));
-							if (ext.isSelected(cursor)) {
-
-								p.setExplodePercent(cursor.getKey(), 0.15);
-								// p.setNotify(true);
-							} else {
-								p.setExplodePercent(cursor.getKey(), 0.0);
-							}
-						}
+		ext.addChangeListener(new SelectionChangeListener() {
+			public void selectionChanged(SelectionChangeEvent event) {				
+				for (int i = 0; i < data.getItemCount(); i++) {
+					cursor.setPosition(data.getKey(i));
+					if (event.getSelectionExtension().isSelected(cursor)) {
+						p.setExplodePercent(cursor.getKey(), 0.15);
+					} else {
+						p.setExplodePercent(cursor.getKey(), 0.0);
 					}
-					boolLock = true;
 				}
+				
 			}
 		});
-
+		
 		panel.setSelectionManager(new EntitySelectionManager(panel,
 				new Dataset[] { data }, dExManager));
 		return panel;

@@ -26,12 +26,11 @@ public class EntitySelectionManager implements SelectionManager {
 	private final DatasetExtensionManager extensionManager;
 	private final Dataset[] datasets;
 
-	//instantiated only once to increase execution speed
+	// instantiated only once to increase execution speed
 	private final XYCursor xyCursor = new XYCursor();
 	private final CategoryCursor categoryCursor = new CategoryCursor();
 	private final PieCursor pieCursor = new PieCursor();
-	
-	
+
 	public EntitySelectionManager(ChartPanel renderSourcePanel,
 			Dataset[] datasets) {
 		this.renderSourcePanel = renderSourcePanel;
@@ -76,72 +75,85 @@ public class EntitySelectionManager implements SelectionManager {
 	public void select(Rectangle2D selection) {
 
 		if (this.renderSourcePanel.getChartRenderingInfo() != null) {
-			EntityCollection entities = this.renderSourcePanel
-					.getChartRenderingInfo().getEntityCollection();
+			muteAll();
+			{
 
-			Iterator iter = entities.getEntities().iterator();
+				EntityCollection entities = this.renderSourcePanel
+						.getChartRenderingInfo().getEntityCollection();
 
-			while (iter.hasNext()) {
-				Object o = iter.next();
+				Iterator iter = entities.getEntities().iterator();
 
-				if (o instanceof DataItemEntity) {
+				while (iter.hasNext()) {
+					Object o = iter.next();
 
-					DataItemEntity e = (DataItemEntity) o;
-					boolean covered = false;
+					if (o instanceof DataItemEntity) {
 
-					if (e.getArea() instanceof Rectangle2D) {
-						// use fast rectangle to rectangle test
-						covered = selection.contains((Rectangle2D) e.getArea());
-					} else {
-						// general shape test
-						Area selectionShape = new Area(selection);
-						Area entityShape = new Area(e.getArea());
+						DataItemEntity e = (DataItemEntity) o;
+						boolean covered = false;
 
-						entityShape.subtract(selectionShape);
-						covered = entityShape.isEmpty();
-					}
+						if (e.getArea() instanceof Rectangle2D) {
+							// use fast rectangle to rectangle test
+							covered = selection.contains((Rectangle2D) e
+									.getArea());
+						} else {
+							// general shape test
+							Area selectionShape = new Area(selection);
+							Area entityShape = new Area(e.getArea());
 
-					if (covered) {
-						select(e);
+							entityShape.subtract(selectionShape);
+							covered = entityShape.isEmpty();
+						}
+
+						if (covered) {
+							select(e);
+						}
 					}
 				}
 			}
+			unmuteAndTrigger();
 		}
 	}
 
 	public void select(GeneralPath selection) {
 
 		if (this.renderSourcePanel.getChartRenderingInfo() != null) {
-			EntityCollection entities = this.renderSourcePanel
-					.getChartRenderingInfo().getEntityCollection();
+			muteAll();
+			{
 
-			Iterator iter = entities.getEntities().iterator();
+				EntityCollection entities = this.renderSourcePanel
+						.getChartRenderingInfo().getEntityCollection();
 
-			while (iter.hasNext()) {
-				Object o = iter.next();
+				Iterator iter = entities.getEntities().iterator();
 
-				if (o instanceof DataItemEntity) {
+				while (iter.hasNext()) {
+					Object o = iter.next();
 
-					DataItemEntity e = (DataItemEntity) o;
+					if (o instanceof DataItemEntity) {
 
-					Area selectionShape = new Area(selection);
-					Area entityShape = new Area(e.getArea());
+						DataItemEntity e = (DataItemEntity) o;
 
-					entityShape.subtract(selectionShape);
+						Area selectionShape = new Area(selection);
+						Area entityShape = new Area(e.getArea());
 
-					if (entityShape.isEmpty()) {
-						select(e);
+						entityShape.subtract(selectionShape);
+
+						if (entityShape.isEmpty()) {
+							select(e);
+						}
 					}
 				}
 			}
+			unmuteAndTrigger();
 		}
 	}
 
 	public void clearSelection() {
 		for (int i = 0; i < this.datasets.length; i++) {
-			if (this.extensionManager.supports(this.datasets[i], DatasetSelectionExtension.class)) {
+			if (this.extensionManager.supports(this.datasets[i],
+					DatasetSelectionExtension.class)) {
 				DatasetSelectionExtension selectionExtension = (DatasetSelectionExtension) this.extensionManager
-						.getExtension(this.datasets[i], DatasetSelectionExtension.class);
+						.getExtension(this.datasets[i],
+								DatasetSelectionExtension.class);
 
 				selectionExtension.clearSelection();
 			}
@@ -160,22 +172,29 @@ public class EntitySelectionManager implements SelectionManager {
 		}
 
 		if (handled) {
-			if (this.extensionManager.supports(e.getGeneralDataset(), DatasetSelectionExtension.class)) {
+			if (this.extensionManager.supports(e.getGeneralDataset(),
+					DatasetSelectionExtension.class)) {
 
 				DatasetSelectionExtension selectionExtension = (DatasetSelectionExtension) this.extensionManager
-						.getExtension(e.getGeneralDataset(), DatasetSelectionExtension.class);
+						.getExtension(e.getGeneralDataset(),
+								DatasetSelectionExtension.class);
 
 				// set the position to the correct element
 				DatasetCursor cursor = null;
 
 				if (e instanceof XYItemEntity) {
-					this.xyCursor.setPosition(((XYItemEntity)e).getSeriesIndex(), ((XYItemEntity)e).getItem());
+					this.xyCursor.setPosition(
+							((XYItemEntity) e).getSeriesIndex(),
+							((XYItemEntity) e).getItem());
 					cursor = this.xyCursor;
 				} else if (e instanceof CategoryItemEntity) {
-					this.categoryCursor.setPosition(((CategoryItemEntity)e).getRowKey(), ((CategoryItemEntity)e).getColumnKey());
+					this.categoryCursor.setPosition(
+							((CategoryItemEntity) e).getRowKey(),
+							((CategoryItemEntity) e).getColumnKey());
 					cursor = this.categoryCursor;
 				} else if (e instanceof PieSectionEntity) {
-					this.pieCursor.setPosition(((PieSectionEntity)e).getSectionKey());					
+					this.pieCursor.setPosition(((PieSectionEntity) e)
+							.getSectionKey());
 					cursor = this.pieCursor;
 				}
 
@@ -183,6 +202,27 @@ public class EntitySelectionManager implements SelectionManager {
 				if (cursor != null) {
 					selectionExtension.setSelected(cursor, true);
 				}
+			}
+		}
+	}
+
+	private void muteAll() {
+		setNotifyOnListenerExtensions(false);
+	}
+
+	private void unmuteAndTrigger() {
+		setNotifyOnListenerExtensions(true);
+	}
+
+	private void setNotifyOnListenerExtensions(boolean notify) {
+		for (int i = 0; i < this.datasets.length; i++) {
+			if (this.extensionManager.supports(datasets[i],
+					DatasetSelectionExtension.class)) {
+				DatasetSelectionExtension selectionExtension = (DatasetSelectionExtension) this.extensionManager
+						.getExtension(datasets[i],
+								DatasetSelectionExtension.class);
+
+				selectionExtension.setNotify(notify);
 			}
 		}
 	}

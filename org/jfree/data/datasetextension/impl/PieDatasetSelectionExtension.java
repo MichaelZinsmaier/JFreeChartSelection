@@ -4,14 +4,14 @@ import java.util.HashMap;
 import java.util.Iterator;
 
 import org.jfree.data.datasetextension.DatasetCursor;
-import org.jfree.data.datasetextension.DatasetSelectionExtension;
 import org.jfree.data.general.Dataset;
 import org.jfree.data.general.PieDataset;
+import org.jfree.data.general.SelectionChangeListener;
 
 
 //TODO incomplete implementation missing handler for dataset changes ...
 
-public class PieDatasetSelectionExtension implements DatasetSelectionExtension {
+public class PieDatasetSelectionExtension extends AbstractDatasetSelectionExtension {
 
 	private final PieDataset dataset;
 	private HashMap selectionData;
@@ -19,6 +19,11 @@ public class PieDatasetSelectionExtension implements DatasetSelectionExtension {
 	public PieDatasetSelectionExtension(PieDataset dataset) {
 		this.dataset = dataset;
 		initSelection();
+	}
+	
+	public PieDatasetSelectionExtension(PieDataset dataset, SelectionChangeListener initialListener) {
+		this(dataset);
+		addChangeListener(initialListener);
 	}
 	
 	public Dataset getDataset() {
@@ -48,11 +53,12 @@ public class PieDatasetSelectionExtension implements DatasetSelectionExtension {
 			if (selected) {
 				this.selectionData.put(c.getKey(), new Boolean(selected));
 			}
+			notifiyIfRequired();
 		} 
 	}
 
 	public void clearSelection() {
-		initSelection();		
+		initSelection();
 	}
 	
 	private void initSelection() {
@@ -64,5 +70,6 @@ public class PieDatasetSelectionExtension implements DatasetSelectionExtension {
 			Comparable key = (Comparable) iter.next();
 			this.selectionData.put(key, new Boolean(false));
 		}
+		notifiyIfRequired();
 	}
 }
