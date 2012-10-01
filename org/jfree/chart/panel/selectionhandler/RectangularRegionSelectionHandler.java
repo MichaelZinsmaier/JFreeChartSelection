@@ -52,9 +52,12 @@ import org.jfree.chart.ChartPanel;
 import org.jfree.util.ShapeUtilities;
 
 /**
- * A mouse handler that allows data items to be selected.
+ * A mouse handler that allows data items to be selected. The selection shape
+ * is a rectangle that can be expanded by dragging the mouse away from the starting
+ * point. 
  * 
- * @since 1.0.14
+ * Will only work together with a ChartPanel as event source
+ * @author zinsmaie
  */
 public class RectangularRegionSelectionHandler extends RegionSelectionHandler {
 
@@ -77,6 +80,10 @@ public class RectangularRegionSelectionHandler extends RegionSelectionHandler {
 		this.startPoint = null;
 	}
 
+	/**
+	 * Creates a new instance with a modifier restriction
+	 * @param modifier e.g. shift has to be pressed InputEvents.SHIFT_MASK
+	 */
 	public RectangularRegionSelectionHandler(int modifier) {
 		super(modifier);
 		this.selectionRect = null;
@@ -101,10 +108,9 @@ public class RectangularRegionSelectionHandler extends RegionSelectionHandler {
 	}
 
 	/**
-	 * Handles a mouse pressed event.
+	 * starts the rectangle selection by fixing the left upper corner of the rectangle
 	 * 
-	 * @param e
-	 *            the event.
+	 * @param e the event.
 	 */
 	public void mousePressed(MouseEvent e) {
 		if (!(e.getSource() instanceof ChartPanel)) {
@@ -126,10 +132,9 @@ public class RectangularRegionSelectionHandler extends RegionSelectionHandler {
 	}
 
 	/**
-	 * Handles a mouse dragged event.
+	 * adjusts with and height of the rectangle by expanding it to the actual position
 	 * 
-	 * @param e
-	 *            the event.
+	 * @param e the event.
 	 */
 	public void mouseDragged(MouseEvent e) {
 		ChartPanel panel = (ChartPanel) e.getSource();
@@ -148,6 +153,11 @@ public class RectangularRegionSelectionHandler extends RegionSelectionHandler {
 		panel.repaint();
 	}
 
+	/**
+	 * finishes the selection and calls the {@link SelectionManager} of
+	 * the event source. The SelectionManager is then responsible for the processing
+	 * of the geometric selection.
+	 */
 	public void mouseReleased(MouseEvent e) {
 		ChartPanel panel = (ChartPanel) e.getSource();
 		if (this.startPoint == null) {
@@ -168,6 +178,13 @@ public class RectangularRegionSelectionHandler extends RegionSelectionHandler {
 		panel.clearLiveMouseHandler();
 	}
 
+	
+	/**
+	 * creates a rectangle from two points
+	 * @param p1 one corner point
+	 * @param p2 the other corner point
+	 * @return a new rectangle that has both points in opposite corners
+	 */
 	private Rectangle getRect(Point2D p1, Point2D p2) {
 		int minX, minY;
 		int w, h;

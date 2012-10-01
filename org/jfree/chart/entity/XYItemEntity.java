@@ -101,6 +101,9 @@ public class XYItemEntity extends DataItemEntity {
         return this.dataset;
     }
     
+    /**
+     * @see DataItemEntity#getGeneralDataset() 
+     */
     public Dataset getGeneralDataset() {
     	return this.dataset;
     }

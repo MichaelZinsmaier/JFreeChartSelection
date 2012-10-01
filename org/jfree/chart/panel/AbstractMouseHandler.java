@@ -50,7 +50,6 @@ import org.jfree.chart.ChartPanel;
  * A handler for mouse events in a {@link ChartPanel}.  A handler can be
  * assigned a modifier and installed on the panel to be invoked by the user.
  *
- * @since 1.0.14
  */
 public abstract class AbstractMouseHandler implements MouseListener,
         MouseMotionListener {

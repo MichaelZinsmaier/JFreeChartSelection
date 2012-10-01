@@ -180,6 +180,9 @@ public class CategoryItemEntity extends DataItemEntity
         return this.dataset;
     }
 
+    /**
+     * @see DataItemEntity#getGeneralDataset() 
+     */
     public Dataset getGeneralDataset() {
     	return this.dataset;
     }

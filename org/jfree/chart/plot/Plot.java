@@ -1240,12 +1240,28 @@ public abstract class Plot implements AxisChangeListener,
         notifyListeners(newEvent);
     }
     
+    /**
+     * Receives notification of a change to the selection state of the plot's data
+     * <P>
+     * The plot reacts by passing on a plot change event to all registered
+     * listeners.
+     *
+     * @param event  information about the event (not used here).
+     */
     public void selectionChanged(SelectionChangeEvent event) {
         PlotChangeEvent newEvent = new PlotChangeEvent(this);
         newEvent.setType(ChartChangeEventType.GENERAL);
         notifyListeners(newEvent);    	
     }
     
+    /**
+     * Receives notification of a change to the label information of the plot's data
+     * <P>
+     * The plot reacts by passing on a plot change event to all registered
+     * listeners.
+     *
+     * @param event  information about the event (not used here).
+     */
     public void labelChanged(LabelChangeEvent event) {
         PlotChangeEvent newEvent = new PlotChangeEvent(this);
         newEvent.setType(ChartChangeEventType.GENERAL);
