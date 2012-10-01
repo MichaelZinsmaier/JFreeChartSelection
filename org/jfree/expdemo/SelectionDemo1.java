@@ -9,7 +9,6 @@ package org.jfree.expdemo;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Paint;
 
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
@@ -29,8 +28,7 @@ import org.jfree.chart.panel.selectionhandler.FreeRegionSelectionHandler;
 import org.jfree.chart.panel.selectionhandler.MouseClickSelectionHandler;
 import org.jfree.chart.panel.selectionhandler.RegionSelectionHandler;
 import org.jfree.chart.plot.XYPlot;
-import org.jfree.chart.renderer.AbstractRenderer;
-import org.jfree.chart.renderer.contribution.DefaultPaintIRS;
+import org.jfree.chart.renderer.rendererextension.IRSUtilities;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.datasetextension.DatasetIterator;
 import org.jfree.data.datasetextension.DatasetSelectionExtension;
@@ -52,12 +50,12 @@ import org.jfree.ui.RefineryUtilities;
 public class SelectionDemo1 extends ApplicationFrame implements
 		SelectionChangeListener {
 
-	JTable table;
+	private JTable table;
 
-	DefaultTableModel model;
+	private DefaultTableModel model;
 
-	TimeSeriesCollection dataset;
-
+	private TimeSeriesCollection dataset;
+	
 	/**
 	 * A demonstration application showing how to create a simple time series
 	 * chart. This example uses monthly data.
@@ -123,8 +121,7 @@ public class SelectionDemo1 extends ApplicationFrame implements
 	 * 
 	 * @return A chart.
 	 */
-	private static JFreeChart createChart(XYDataset dataset) {
-
+	private static JFreeChart createChart(XYDataset dataset, DatasetSelectionExtension ext) {
 		JFreeChart chart = ChartFactory.createTimeSeriesChart("Stock Prices", // title
 				"Date", // x-axis label
 				"Price Per Unit", // y-axis label
@@ -145,6 +142,13 @@ public class SelectionDemo1 extends ApplicationFrame implements
 		r.setUseFillPaint(true);
 		r.setSeriesFillPaint(0, r.lookupSeriesPaint(0));
 		r.setSeriesFillPaint(1, r.lookupSeriesPaint(1));
+		
+		//add selection specific rendering
+		IRSUtilities.setSelectedItemFillPaint(r, ext, Color.white);
+		
+		//register plot as selection change listener
+		ext.addChangeListener(plot);
+		
 		return chart;
 
 	}
@@ -154,7 +158,7 @@ public class SelectionDemo1 extends ApplicationFrame implements
 	 * 
 	 * @return The dataset.
 	 */
-	private static XYDataset createDataset() {
+	private static TimeSeriesCollection createDataset() {
 
 		TimeSeries s1 = new TimeSeries("S1");
 		s1.add(new Month(1, 2009), 181.8);
@@ -205,45 +209,30 @@ public class SelectionDemo1 extends ApplicationFrame implements
 	}
 
 	public JPanel createDemoPanel() {
-		XYDataset data = createDataset();
-		JFreeChart chart = createChart(data);
+		XYDataset dataset = createDataset();
+		//extend dataset and add selection change listener for the demo
+		DatasetSelectionExtension datasetExtension = new XYDatasetSelectionExtension(dataset);	
+		datasetExtension.addChangeListener(this);
+		
+		//standard setup
+		JFreeChart chart = createChart(dataset, datasetExtension);
 		ChartPanel panel = new ChartPanel(chart);
-		panel.setFillZoomRectangle(true);
 		panel.setMouseWheelEnabled(true);
 
-		// extend the panel with a selection handler
+		// add a selection handler
 		RegionSelectionHandler selectionHandler = new FreeRegionSelectionHandler();
 		panel.addMouseHandler(selectionHandler);
 		panel.addMouseHandler(new MouseClickSelectionHandler());
-
-		// extend the dataset with selection storage
+		panel.removeMouseHandler(panel.getZoomHandler());
+		
+		// add a selection manager
 		DatasetExtensionManager dExManager = new DatasetExtensionManager();
-		final DatasetSelectionExtension ext = new XYDatasetSelectionExtension(
-				data, chart.getPlot());
-		ext.addChangeListener(this);
-
-		dExManager.registerDatasetExtension(ext);
-
-		// extend the renderer
-		final XYCursor cursor = new XYCursor();
-		AbstractRenderer renderer = (AbstractRenderer) ((XYPlot) chart
-				.getPlot()).getRenderer();
-		renderer.setPaintIRS(new DefaultPaintIRS(renderer) {
-			public Paint getItemFillPaint(int row, int column) {
-				cursor.setPosition(row, column);
-				if (ext.isSelected(cursor)) {
-					return Color.white;
-				} else {
-					return super.getItemFillPaint(row, column);
-				}
-			}
-		});
-
-		panel.setSelectionManager(new EntitySelectionManager(panel,
-				new Dataset[] { data }, dExManager));
+		dExManager.registerDatasetExtension(datasetExtension);
+		panel.setSelectionManager(new EntitySelectionManager(panel,	new Dataset[] { dataset }, dExManager));
+		
 		return panel;
 	}
-
+	
 	/**
 	 * Starting point for the demonstration application.
 	 * 

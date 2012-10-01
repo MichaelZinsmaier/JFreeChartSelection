@@ -8,7 +8,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GradientPaint;
-import java.awt.Paint;
 
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
@@ -33,9 +32,8 @@ import org.jfree.chart.panel.selectionhandler.RectangularRegionSelectionHandler;
 import org.jfree.chart.panel.selectionhandler.RegionSelectionHandler;
 import org.jfree.chart.plot.CategoryPlot;
 import org.jfree.chart.plot.PlotOrientation;
-import org.jfree.chart.renderer.AbstractRenderer;
 import org.jfree.chart.renderer.category.BarRenderer;
-import org.jfree.chart.renderer.contribution.DefaultPaintIRS;
+import org.jfree.chart.renderer.rendererextension.IRSUtilities;
 import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.category.DefaultCategoryDataset;
 import org.jfree.data.datasetextension.DatasetIterator;
@@ -52,11 +50,11 @@ import org.jfree.ui.RefineryUtilities;
 
 public class SelectionDemo5Category extends ApplicationFrame implements SelectionChangeListener {
 
-	JTable table;
+	private JTable table;
 
-	DefaultTableModel model;
+	private DefaultTableModel model;
 
-	CategoryDataset dataset;
+	private CategoryDataset dataset;
 	
 	
 	    public SelectionDemo5Category(String title) {
@@ -66,7 +64,7 @@ public class SelectionDemo5Category extends ApplicationFrame implements Selectio
 	        
 			JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
 			split.add(chartPanel);
-
+			
 			this.model = new DefaultTableModel(new String[] { "row:", "column:",
 					"value:"}, 0);
 			this.table = new JTable(this.model);
@@ -125,7 +123,7 @@ public class SelectionDemo5Category extends ApplicationFrame implements Selectio
 	    }
 
 	    
-	    private static JFreeChart createChart(CategoryDataset dataset) {
+	    private static JFreeChart createChart(CategoryDataset dataset, DatasetSelectionExtension ext) {
 
 	        // create the chart...
 	        JFreeChart chart = ChartFactory.createBarChart(
@@ -171,47 +169,41 @@ public class SelectionDemo5Category extends ApplicationFrame implements Selectio
 	                CategoryLabelPositions.createUpRotationLabelPositions(
 	                        Math.PI / 6.0));
 
+	        
+			//add selection specific rendering
+			IRSUtilities.setSelectedItemPaint(renderer, ext, Color.WHITE);
+			
+			//register plot as selection change listener
+			ext.addChangeListener(plot);
+	        
 	        return chart;
 
 	    }
 
 
 	    public JPanel createDemoPanel() {
-	    	dataset = createDataset();
-	        JFreeChart chart = createChart(dataset);
-	        ChartPanel panel = new ChartPanel(chart);
-	        panel.setFillZoomRectangle(true);
-	        panel.setMouseWheelEnabled(true);
+			this.dataset = createDataset();
+			//extend dataset and add selection change listener for the demo
+			DatasetSelectionExtension datasetExtension = new CategoryDatasetSelectionExtension(this.dataset);	
+			datasetExtension.addChangeListener(this);
+			
+			//standard setup
+			JFreeChart chart = createChart(this.dataset, datasetExtension);
+			ChartPanel panel = new ChartPanel(chart);
+			panel.setMouseWheelEnabled(true);
 
-
-	        //extend the panel with a selection handler
-	        RegionSelectionHandler selectionHandler = new RectangularRegionSelectionHandler();
-	        panel.addMouseHandler(selectionHandler);
-	        panel.addMouseHandler(new MouseClickSelectionHandler());
-	        
-	        //extend the dataset with selection storage
-	        DatasetExtensionManager dExManager = new DatasetExtensionManager();
-	        final DatasetSelectionExtension ext = new CategoryDatasetSelectionExtension(dataset, chart.getPlot());
-	        ext.addChangeListener(this);
-	        dExManager.registerDatasetExtension(ext);
-	                
-	        //extend the renderer
-	        final CategoryCursor cursor = new CategoryCursor();
-	        AbstractRenderer renderer = (AbstractRenderer)((CategoryPlot)chart.getPlot()).getRenderer();
-	        
-	        renderer.setPaintIRS(new DefaultPaintIRS(renderer) {
-	        	public Paint getItemPaint(int row, int column) {
-	        		cursor.setPosition(dataset.getRowKey(row), dataset.getColumnKey(column));
-	        		if (ext.isSelected(cursor)) {
-	        			return Color.white;
-	        		} else {
-	        			return super.getItemPaint(row, column);
-	        		}
-	        	}
-	        });
-	        
-	        panel.setSelectionManager(new EntitySelectionManager(panel, new Dataset[]{dataset}, dExManager));
-	        return panel;
+			// add a selection handler
+			RegionSelectionHandler selectionHandler = new RectangularRegionSelectionHandler();
+			panel.addMouseHandler(selectionHandler);
+			panel.addMouseHandler(new MouseClickSelectionHandler());
+			panel.removeMouseHandler(panel.getZoomHandler());
+			
+			// add a selection manager
+			DatasetExtensionManager dExManager = new DatasetExtensionManager();
+			dExManager.registerDatasetExtension(datasetExtension);
+			panel.setSelectionManager(new EntitySelectionManager(panel,	new Dataset[] { this.dataset }, dExManager));
+			
+			return panel;
 	    }
 
 

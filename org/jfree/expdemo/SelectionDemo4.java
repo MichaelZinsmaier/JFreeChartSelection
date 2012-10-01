@@ -9,7 +9,6 @@ package org.jfree.expdemo;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Paint;
 import java.io.IOException;
 import java.util.Random;
 
@@ -32,8 +31,7 @@ import org.jfree.chart.panel.selectionhandler.MouseClickSelectionHandler;
 import org.jfree.chart.panel.selectionhandler.RegionSelectionHandler;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
-import org.jfree.chart.renderer.AbstractRenderer;
-import org.jfree.chart.renderer.contribution.DefaultPaintIRS;
+import org.jfree.chart.renderer.rendererextension.IRSUtilities;
 import org.jfree.chart.renderer.xy.StandardXYBarPainter;
 import org.jfree.chart.renderer.xy.XYBarRenderer;
 import org.jfree.data.datasetextension.DatasetIterator;
@@ -57,10 +55,39 @@ import org.jfree.ui.RefineryUtilities;
 public class SelectionDemo4 extends ApplicationFrame implements
 		SelectionChangeListener {
 
-	SimpleHistogramDataset dataset;
-	DefaultTableModel model;
-	JTable table;
+	private SimpleHistogramDataset dataset;
+	private DefaultTableModel model;
+	private JTable table;
 
+	/**
+	 * Creates a new demo.
+	 * 
+	 * @param title
+	 *            the frame title.
+	 */
+	public SelectionDemo4(String title) {
+		super(title);
+		ChartPanel chartPanel = (ChartPanel) createDemoPanel();
+		chartPanel.setPreferredSize(new java.awt.Dimension(500, 270));
+
+		JFreeChart chart = chartPanel.getChart();
+		XYPlot plot = (XYPlot) chart.getPlot();
+		this.dataset = (SimpleHistogramDataset) plot.getDataset();
+		JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
+		split.add(chartPanel);
+		
+		this.model = new DefaultTableModel(new String[] { "Item:",
+				"Bin Start::", "Bin End:", "Value:" }, 0);
+		this.table = new JTable(this.model);
+		JPanel p = new JPanel(new BorderLayout());
+		JScrollPane scroller = new JScrollPane(this.table);
+		p.add(scroller);
+		p.setBorder(BorderFactory.createCompoundBorder(new TitledBorder(
+				"Selected Items: "), new EmptyBorder(4, 4, 4, 4)));
+		split.add(p);
+		setContentPane(split);
+	}
+	
 	/**
 	 * The selection changed, so we change the table model
 	 * 
@@ -82,32 +109,6 @@ public class SelectionDemo4 extends ApplicationFrame implements
 					this.dataset.getEndX(dc.series, dc.item),
 					this.dataset.getY(dc.series, dc.item) });
 		}
-	}
-
-	/**
-	 * Creates a new demo.
-	 * 
-	 * @param title
-	 *            the frame title.
-	 */
-	public SelectionDemo4(String title) {
-		super(title);
-		ChartPanel chartPanel = (ChartPanel) createDemoPanel();
-		chartPanel.setPreferredSize(new java.awt.Dimension(500, 270));
-
-		JSplitPane split = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
-		split.add(chartPanel);
-
-		this.model = new DefaultTableModel(new String[] { "Item:",
-				"Bin Start::", "Bin End:", "Value:" }, 0);
-		this.table = new JTable(this.model);
-		JPanel p = new JPanel(new BorderLayout());
-		JScrollPane scroller = new JScrollPane(this.table);
-		p.add(scroller);
-		p.setBorder(BorderFactory.createCompoundBorder(new TitledBorder(
-				"Selected Items: "), new EmptyBorder(4, 4, 4, 4)));
-		split.add(p);
-		setContentPane(split);
 	}
 
 	/**
@@ -142,7 +143,7 @@ public class SelectionDemo4 extends ApplicationFrame implements
 	 * 
 	 * @return The chart.
 	 */
-	private static JFreeChart createChart(IntervalXYDataset dataset) {
+	private static JFreeChart createChart(IntervalXYDataset dataset, DatasetSelectionExtension ext) {
 		JFreeChart chart = ChartFactory.createHistogram("SelectionDemo4", null,
 				null, dataset, PlotOrientation.VERTICAL, true, true, false);
 		XYPlot plot = (XYPlot) chart.getPlot();
@@ -156,6 +157,13 @@ public class SelectionDemo4 extends ApplicationFrame implements
 		renderer.setBaseOutlinePaint(Color.red);
 		renderer.setBarPainter(new StandardXYBarPainter());
 		renderer.setShadowVisible(false);
+		
+		//add selection specific rendering
+		IRSUtilities.setSelectedItemPaint(renderer, ext, Color.white);
+		
+		//register plot as selection change listener
+		ext.addChangeListener(plot);
+		
 		return chart;
 	}
 
@@ -165,42 +173,30 @@ public class SelectionDemo4 extends ApplicationFrame implements
 	 * @return A panel.
 	 */
 	public JPanel createDemoPanel() {
-		dataset = (SimpleHistogramDataset) createDataset();
-		JFreeChart chart = createChart(dataset);
+		IntervalXYDataset dataset = createDataset();
+		//extend dataset and add selection change listener for the demo
+		DatasetSelectionExtension datasetExtension = new XYDatasetSelectionExtension(dataset);	
+		datasetExtension.addChangeListener(this);
+		
+		//standard setup
+		JFreeChart chart = createChart(dataset, datasetExtension);
 		ChartPanel panel = new ChartPanel(chart);
 		panel.setMouseWheelEnabled(true);
-		panel.removeMouseHandler(panel.getZoomHandler());
 
-		// extend the panel with a selection handler
+		// add a selection handler
 		RegionSelectionHandler selectionHandler = new FreeRegionSelectionHandler();
 		panel.addMouseHandler(selectionHandler);
 		panel.addMouseHandler(new MouseClickSelectionHandler());
-
-		// extend the dataset with selection storage
+		panel.removeMouseHandler(panel.getZoomHandler());
+		
+		// add a selection manager with intersection selection
 		DatasetExtensionManager dExManager = new DatasetExtensionManager();
-		final DatasetSelectionExtension ext = new XYDatasetSelectionExtension(
-				dataset, chart.getPlot());
-		ext.addChangeListener(this);
-		dExManager.registerDatasetExtension(ext);
-
-		// extend the renderer
-		final XYCursor cursor = new XYCursor();
-		AbstractRenderer renderer = (AbstractRenderer) ((XYPlot) chart
-				.getPlot()).getRenderer();
-		renderer.setPaintIRS(new DefaultPaintIRS(renderer) {
-			public Paint getItemPaint(int row, int column) {
-				cursor.setPosition(row, column);
-				if (ext.isSelected(cursor)) {
-					return Color.white;
-				} else {
-					return super.getItemPaint(row, column);
-				}
-			}
-		});
-
-		EntitySelectionManager selectionManager = new EntitySelectionManager(panel, new Dataset[] { dataset }, dExManager);
+		dExManager.registerDatasetExtension(datasetExtension);
+		
+		EntitySelectionManager selectionManager = new EntitySelectionManager(panel,	new Dataset[] { dataset }, dExManager);
 		selectionManager.setIntersectionSelection(true);
 		panel.setSelectionManager(selectionManager);
+		
 		return panel;
 	}
 
