@@ -7,9 +7,9 @@ import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.datasetextension.DatasetCursor;
 import org.jfree.data.datasetextension.DatasetSelectionExtension;
 import org.jfree.data.datasetextension.impl.CategoryCursor;
-import org.jfree.data.datasetextension.impl.CategoryDatasetSelectionExtension;
 import org.jfree.data.datasetextension.impl.XYCursor;
-import org.jfree.data.datasetextension.impl.XYDatasetSelectionExtension;
+import org.jfree.data.general.Dataset;
+import org.jfree.data.xy.XYDataset;
 
 /**
  * A helper class to define simple item rendering strategies.
@@ -50,6 +50,9 @@ public class IRSUtilities {
 			/** a generated serial id */
 			private static final long serialVersionUID = -7838213904327581272L;
 
+			
+			private final Dataset dataset = ext.getDataset();
+			
 			public Paint getItemPaint(int row, int column) {
 				if (itemPaint == null || !isSelected(row, column)) {
 					return super.getItemPaint(row, column);
@@ -77,12 +80,13 @@ public class IRSUtilities {
 			private boolean isSelected(int row, int column) {
 				//note that pie plots aren't based on the abstract renderer
 				//=> threat only xy and category
-				if (ext instanceof XYDatasetSelectionExtension) {
+				
+				if (this.dataset instanceof XYDataset) {
 					xyCursor.setPosition(row, column);
 					cursor = xyCursor;
 				} else
-				if (ext instanceof CategoryDatasetSelectionExtension) {
-					CategoryDataset d = (CategoryDataset)ext.getDataset(); 
+				if (this.dataset instanceof CategoryDataset) {
+					CategoryDataset d = (CategoryDataset)dataset; 
 					categoryCursor.setPosition(d.getRowKey(row), d.getColumnKey(column));
 					cursor = categoryCursor;
 				} else { 
