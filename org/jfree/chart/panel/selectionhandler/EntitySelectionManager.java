@@ -22,30 +22,35 @@ import org.jfree.data.datasetextension.impl.XYCursor;
 import org.jfree.data.general.Dataset;
 
 /**
- * Selects data items based on the shape of their rendered entities and a given point or region
- * selection in the ChartPanel plane.<br>
+ * Selects data items based on the shape of their rendered entities and a given
+ * point or region selection in the ChartPanel plane.<br>
  * <br>
  * region selection:<br>
- * Depending on the rendering mode {@link #intersectionMode} selects either all entities that
- * intersect the selection region or all entities that are completely inside the selection region.<br>
+ * Depending on the rendering mode {@link #intersectionMode} selects either all
+ * entities that intersect the selection region or all entities that are
+ * completely inside the selection region.<br>
  * <br>
  * point selection:<br>
- * Selects all entities that contain the selection point
- * <br>
+ * Selects all entities that contain the selection point <br>
  * <br>
  * The entities are retrieved from the ChartPanel
  * 
  * @author zinsmaie
  */
 public class EntitySelectionManager implements SelectionManager {
-	
-	/** if true a entity has to intersect the selection region to be selected
-	 * if false a entity has to be completely inside the selection region to be selected.
+
+	/**
+	 * if true a entity has to intersect the selection region to be selected if
+	 * false a entity has to be completely inside the selection region to be
+	 * selected.
 	 */
 	private boolean intersectionMode;
-	/** the ChartPanel this manager is registered on*/
+	/** the ChartPanel this manager is registered on */
 	private final ChartPanel renderSourcePanel;
-	/** couples datasets and selection information of datasets that do not support {@link DatasetSelectionExtension} */
+	/**
+	 * couples datasets and selection information of datasets that do not
+	 * support {@link DatasetSelectionExtension}
+	 */
 	private final DatasetExtensionManager extensionManager;
 	/** all datasets that are handled by the manager. */
 	private final Dataset[] datasets;
@@ -56,11 +61,13 @@ public class EntitySelectionManager implements SelectionManager {
 	private final PieCursor pieCursor = new PieCursor();
 
 	/**
-	 * constructs a new selection manager. Use this constructor if all datasets support
-	 * {@link DatasetSelectionExtension}
+	 * constructs a new selection manager. Use this constructor if all datasets
+	 * support {@link DatasetSelectionExtension}
 	 * 
-	 * @param renderSourcePanel {@link #renderSourcePanel}
-	 * @param datasets {@link #datasets}
+	 * @param renderSourcePanel
+	 *            {@link #renderSourcePanel}
+	 * @param datasets
+	 *            {@link #datasets}
 	 */
 	public EntitySelectionManager(ChartPanel renderSourcePanel,
 			Dataset[] datasets) {
@@ -73,13 +80,17 @@ public class EntitySelectionManager implements SelectionManager {
 
 	/**
 	 * constructs a new selection manager and provides a extension manager. Use
-	 * this constructor if some of the used datasets do not support {@link DatasetSelectionExtension}.
-	 * These datasets can be coupled with appropriate helper objects by registering them
-	 * to the extension manager before the constructor call.
+	 * this constructor if some of the used datasets do not support
+	 * {@link DatasetSelectionExtension}. These datasets can be coupled with
+	 * appropriate helper objects by registering them to the extension manager
+	 * before the constructor call.
 	 * 
-	 * @param renderSourcePanel {@link #renderSourcePanel}
-	 * @param datasets {@link #datasets}
-	 * @param extensionManager {@link #extensionManager}
+	 * @param renderSourcePanel
+	 *            {@link #renderSourcePanel}
+	 * @param datasets
+	 *            {@link #datasets}
+	 * @param extensionManager
+	 *            {@link #extensionManager}
 	 */
 	public EntitySelectionManager(ChartPanel renderSourcePanel,
 			Dataset[] datasets, DatasetExtensionManager extensionManager) {
@@ -90,29 +101,29 @@ public class EntitySelectionManager implements SelectionManager {
 		this.extensionManager = extensionManager;
 		this.intersectionMode = false;
 	}
-	
+
 	/**
-	 * @param on {@link #intersectionMode}
+	 * @param on
+	 *            {@link #intersectionMode}
 	 */
 	public void setIntersectionSelection(boolean on) {
 		this.intersectionMode = on;
 	}
 
 	/**
-	 * {@link SelectionManager#select(double, double)}
-	 * <br>
-	 *  Selection based on the shape of the data items 
+	 * {@link SelectionManager#select(double, double)} <br>
+	 * Selection based on the shape of the data items
 	 */
 	public void select(double x, double y) {
 
-		//scale if necessary
-		double scaleX = this.renderSourcePanel.getScaleX(); 
-		double scaleY = this.renderSourcePanel.getScaleY();		
+		// scale if necessary
+		double scaleX = this.renderSourcePanel.getScaleX();
+		double scaleY = this.renderSourcePanel.getScaleY();
 		if (scaleX != 1.0d || scaleY != 1.0d) {
 			x = x / scaleX;
 			y = y / scaleY;
-		} 
-		
+		}
+
 		if (this.renderSourcePanel.getChartRenderingInfo() != null) {
 			EntityCollection entities = this.renderSourcePanel
 					.getChartRenderingInfo().getEntityCollection();
@@ -136,25 +147,25 @@ public class EntitySelectionManager implements SelectionManager {
 
 	/**
 	 * 
-	 * {@link SelectionManager#select(Rectangle2D)}
-	 * <br>
-	 *  Selection based on the shape of the data items
+	 * {@link SelectionManager#select(Rectangle2D)} <br>
+	 * Selection based on the shape of the data items
 	 */
 	public void select(Rectangle2D pSelection) {
-		//scale if necessary
+		// scale if necessary
 		Rectangle2D selection;
-		double scaleX = this.renderSourcePanel.getScaleX(); 
-		double scaleY = this.renderSourcePanel.getScaleY();		
+		double scaleX = this.renderSourcePanel.getScaleX();
+		double scaleY = this.renderSourcePanel.getScaleY();
 		if (scaleX != 1.0d || scaleY != 1.0d) {
-			AffineTransform st = AffineTransform.getScaleInstance(1.0 / scaleX, 1.0 / scaleY);
+			AffineTransform st = AffineTransform.getScaleInstance(1.0 / scaleX,
+					1.0 / scaleY);
 			Area selectionArea = new Area(pSelection);
 			selectionArea.transform(st);
 			selection = selectionArea.getBounds2D();
-		}  else {
+		} else {
 			selection = pSelection;
 		}
-		
-		if (this.renderSourcePanel.getChartRenderingInfo() != null) {			
+
+		if (this.renderSourcePanel.getChartRenderingInfo() != null) {
 			muteAll();
 			{
 
@@ -173,7 +184,7 @@ public class EntitySelectionManager implements SelectionManager {
 
 						if (e.getArea() instanceof Rectangle2D) {
 							Rectangle2D entityRect = (Rectangle2D) e.getArea();
-							// use fast rectangle to rectangle test							
+							// use fast rectangle to rectangle test
 							if (this.intersectionMode) {
 								match = selection.intersects(entityRect);
 							} else {
@@ -184,14 +195,20 @@ public class EntitySelectionManager implements SelectionManager {
 							Area selectionShape = new Area(selection);
 							Area entityShape = new Area(e.getArea());
 
-							if (this.intersectionMode) {
-								//test if the shapes intersect
-								entityShape.intersect(selectionShape);
-								match = !entityShape.isEmpty();
+							// fast test if completely inside the solution must be true
+							if (selectionShape.contains(entityShape.getBounds())) {
+								match = true;
 							} else {
-								//test if the entity shape is completely covered by the selection
-								entityShape.subtract(selectionShape);
-								match = entityShape.isEmpty();			
+								if (this.intersectionMode) {
+									// test if the shapes intersect
+									entityShape.intersect(selectionShape);
+									match = !entityShape.isEmpty();
+								} else {
+									// test if the entity shape is completely
+									// covered by the selection
+									entityShape.subtract(selectionShape);
+									match = entityShape.isEmpty();
+								}
 							}
 						}
 
@@ -206,24 +223,24 @@ public class EntitySelectionManager implements SelectionManager {
 	}
 
 	/**
-	 * {@link SelectionManager#select(GeneralPath)}
-	 * <br>
-	 *  Selection based on the shape of the data items
+	 * {@link SelectionManager#select(GeneralPath)} <br>
+	 * Selection based on the shape of the data items
 	 */
 	public void select(GeneralPath pSelection) {
-		//scale if necessary
+		// scale if necessary
 		GeneralPath selection;
-		double scaleX = this.renderSourcePanel.getScaleX(); 
-		double scaleY = this.renderSourcePanel.getScaleY();		
+		double scaleX = this.renderSourcePanel.getScaleX();
+		double scaleY = this.renderSourcePanel.getScaleY();
 		if (scaleX != 1.0d || scaleY != 1.0d) {
-			AffineTransform st = AffineTransform.getScaleInstance(1.0 / scaleX, 1.0 / scaleY);
+			AffineTransform st = AffineTransform.getScaleInstance(1.0 / scaleX,
+					1.0 / scaleY);
 			Area selectionArea = new Area(pSelection);
 			selectionArea.transform(st);
 			selection = new GeneralPath(selectionArea);
-		}  else {
+		} else {
 			selection = pSelection;
 		}
-				
+
 		if (this.renderSourcePanel.getChartRenderingInfo() != null) {
 			muteAll();
 			{
@@ -241,18 +258,24 @@ public class EntitySelectionManager implements SelectionManager {
 						Area selectionShape = new Area(selection);
 						Area entityShape = new Area(e.getArea());
 
-						if (this.intersectionMode) {
-							//test if the shapes intersect
-							entityShape.intersect(selectionShape);
-							if (!entityShape.isEmpty()) {
-								select(e);
+						// fast test if completely inside the solution must be true
+						if (selectionShape.contains(entityShape.getBounds())) {
+							select(e);
+						} else {						
+							if (this.intersectionMode) {
+								// test if the shapes intersect
+								entityShape.intersect(selectionShape);
+								if (!entityShape.isEmpty()) {
+									select(e);
+								}
+							} else {
+								// test if the entity shape is completely covered by
+								//the selection
+								entityShape.subtract(selectionShape);
+								if (entityShape.isEmpty()) {
+									select(e);
+								}
 							}
-						} else {
-							//test if the entity shape is completely covered by the selection
-							entityShape.subtract(selectionShape);
-							if (entityShape.isEmpty()) {
-								select(e);
-							}							
 						}
 					}
 				}
@@ -261,7 +284,8 @@ public class EntitySelectionManager implements SelectionManager {
 		}
 	}
 
-	 /** {@link SelectionManager#clearSelection()}
+	/**
+	 * {@link SelectionManager#clearSelection()}
 	 */
 	public void clearSelection() {
 		for (int i = 0; i < this.datasets.length; i++) {
@@ -275,14 +299,16 @@ public class EntitySelectionManager implements SelectionManager {
 			}
 		}
 	}
-	
+
 	/**
-	 * tests if the dataset is handled by the selection manager (part of {@link #datasets})
-	 * and if it either supports {@link DatasetSelectionExtension} directly or via the extension
-	 * manager.<br>
+	 * tests if the dataset is handled by the selection manager (part of
+	 * {@link #datasets}) and if it either supports
+	 * {@link DatasetSelectionExtension} directly or via the extension manager.<br>
 	 * <br>
-	 * The selects the specified data item. 
-	 * @param e data item that should be selected
+	 * The selects the specified data item.
+	 * 
+	 * @param e
+	 *            data item that should be selected
 	 */
 	private void select(DataItemEntity e) {
 		// to support propper clear functionality we must maintain
@@ -331,32 +357,35 @@ public class EntitySelectionManager implements SelectionManager {
 	}
 
 	/**
-	 * mutes the selection change listener for all handled datasets (in {@link #datasets}
-	 * and supports {@link DatasetSelectionExtension}
+	 * mutes the selection change listener for all handled datasets (in
+	 * {@link #datasets} and supports {@link DatasetSelectionExtension}
 	 */
 	private void muteAll() {
 		setNotifyOnListenerExtensions(false);
 	}
 
 	/**
-	 * unmutes the selection change listener for all handled datasets (in {@link #datasets}
-	 * and supports {@link DatasetSelectionExtension}
+	 * unmutes the selection change listener for all handled datasets (in
+	 * {@link #datasets} and supports {@link DatasetSelectionExtension}
 	 * 
-	 * unmute should trigger a selection changed event if something happened since mute (but this is controlled
-	 * by the implementing classes and can only be assumed here)  
-	*/
+	 * unmute should trigger a selection changed event if something happened
+	 * since mute (but this is controlled by the implementing classes and can
+	 * only be assumed here)
+	 */
 	private void unmuteAndTrigger() {
 		setNotifyOnListenerExtensions(true);
 	}
 
 	/**
-	 * mutes / unmutes the selection change listener for all handled datasets (in {@link #datasets}
-	 * and supports {@link DatasetSelectionExtension}
+	 * mutes / unmutes the selection change listener for all handled datasets
+	 * (in {@link #datasets} and supports {@link DatasetSelectionExtension}
 	 * 
-	 * unmute should trigger a selection changed event if something happened since mute (but this is controlled
-	 * by the implementing classes and can only be assumed here)  
+	 * unmute should trigger a selection changed event if something happened
+	 * since mute (but this is controlled by the implementing classes and can
+	 * only be assumed here)
 	 * 
-	 * @param notify false to mute true to unmute 
+	 * @param notify
+	 *            false to mute true to unmute
 	 */
 	private void setNotifyOnListenerExtensions(boolean notify) {
 		for (int i = 0; i < this.datasets.length; i++) {
