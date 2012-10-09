@@ -37,4 +37,29 @@ public class PieCursor implements DatasetCursor {
 		this.key = key;
 	}
 
+	//depend on the implementation of comparable
+	//if the key overrides hashCode and equals these methods will function
+	//for the cursor (e.g. String, Integer, ...)
+	
+	public int hashCode() {
+		int result = 31  + ((key == null) ? 0 : key.hashCode());
+		return result;
+	}
+
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		PieCursor other = (PieCursor) obj;
+		if (key == null) {
+			if (other.key != null)
+				return false;
+		} else if (!key.equals(other.key))
+			return false;
+		return true;
+	}
+
 }

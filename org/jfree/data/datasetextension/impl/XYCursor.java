@@ -42,4 +42,32 @@ public class XYCursor implements DatasetCursor {
 		this.series = series;
 		this.item = item;
 	}
+
+	//in contrast to the other cursor implementations
+	//hasCode and equals for the XYCursor work guaranteed as expected
+	
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + item;
+		result = prime * result + series;
+		return result;
+	}
+
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		XYCursor other = (XYCursor) obj;
+		if (item != other.item)
+			return false;
+		if (series != other.series)
+			return false;
+		return true;
+	}
+	
+	
 }

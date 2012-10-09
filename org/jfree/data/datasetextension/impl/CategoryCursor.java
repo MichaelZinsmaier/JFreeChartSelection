@@ -44,4 +44,36 @@ public class CategoryCursor implements DatasetCursor {
 		this.columnKey = columnKey;
 	}
 	
+	//depend on the implementation of comparable
+	//if the keys overrides hashCode and equals these methods will function
+	//for the cursor (e.g. String, Integer, ...)
+
+	public int hashCode() {
+		int result = 31 + ((columnKey == null) ? 0 : columnKey.hashCode());
+		result = 31 * result + ((rowKey == null) ? 0 : rowKey.hashCode());
+		return result;
+	}
+
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		CategoryCursor other = (CategoryCursor) obj;
+		if (columnKey == null) {
+			if (other.columnKey != null)
+				return false;
+		} else if (!columnKey.equals(other.columnKey))
+			return false;
+		if (rowKey == null) {
+			if (other.rowKey != null)
+				return false;
+		} else if (!rowKey.equals(other.rowKey))
+			return false;
+		return true;
+	}
+	
+	
 }
