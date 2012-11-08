@@ -63,6 +63,9 @@ import org.jfree.util.ShapeUtilities;
  */
 public class CircularRegionSelectionHandler extends RegionSelectionHandler {
 
+	/** a generated serial id. */
+	private static final long serialVersionUID = 5627320657050195767L;
+
 	/**
 	 * The selection path (in Java2D space).
 	 */

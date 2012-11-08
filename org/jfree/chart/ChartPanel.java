@@ -3159,6 +3159,7 @@ public class ChartPanel extends JPanel implements ChartChangeListener,
 		stream.defaultWriteObject();
 		SerialUtilities.writePaint(this.zoomFillPaint, stream);
 		SerialUtilities.writePaint(this.zoomOutlinePaint, stream);
+		SerialUtilities.writeStroke(this.selectionOutlineStroke, stream);
 	}
 
 	/**
@@ -3177,7 +3178,8 @@ public class ChartPanel extends JPanel implements ChartChangeListener,
 		stream.defaultReadObject();
 		this.zoomFillPaint = SerialUtilities.readPaint(stream);
 		this.zoomOutlinePaint = SerialUtilities.readPaint(stream);
-
+		this.selectionOutlineStroke = SerialUtilities.readStroke(stream);
+		
 		// we create a new but empty chartMouseListeners list
 		this.chartMouseListeners = new EventListenerList();
 
@@ -3305,7 +3307,7 @@ public class ChartPanel extends JPanel implements ChartChangeListener,
 	 * 
 	 * @since 
 	 */
-	private Stroke selectionOutlineStroke = new BasicStroke(1.0f,
+	private transient Stroke selectionOutlineStroke = new BasicStroke(1.0f,
 			BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND, 4.0f, new float[] {
 					3.0f, 3.0f }, 0.0f);
 

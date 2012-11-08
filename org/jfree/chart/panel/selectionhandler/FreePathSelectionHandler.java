@@ -62,6 +62,9 @@ import org.jfree.util.ShapeUtilities;
  * Will only work together with a ChartPanel as event source
  */
 public class FreePathSelectionHandler extends RegionSelectionHandler {
+	
+	/** a generated serial id. */
+	private static final long serialVersionUID = 8051992918085934799L;
 
 	/**
 	 * temporary storage for points

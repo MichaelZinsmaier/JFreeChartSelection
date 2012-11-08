@@ -2,6 +2,7 @@ package org.jfree.chart.panel.selectionhandler;
 
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Rectangle2D;
+import java.io.Serializable;
 
 /**
  * Provides methods to handle data item selection based on a selection region
@@ -9,7 +10,7 @@ import java.awt.geom.Rectangle2D;
  * 
  * @author zinsmaie
  */
-public interface SelectionManager {
+public interface SelectionManager extends Serializable {
 
 	/**
 	 * selects the data item at the point x,y

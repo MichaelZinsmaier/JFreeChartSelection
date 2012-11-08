@@ -55,7 +55,10 @@ import org.jfree.util.ShapeUtilities;
  */
 public class ZoomHandler extends AbstractMouseHandler {
 
-    private Point2D zoomPoint;
+    /** a generated serial id. */
+	private static final long serialVersionUID = -3796063183854513802L;
+
+	private Point2D zoomPoint;
 
     private Rectangle2D zoomRectangle;
 

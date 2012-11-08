@@ -1,6 +1,9 @@
 package org.jfree.chart.renderer.rendererextension;
 
 import java.awt.Paint;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
 import org.jfree.chart.renderer.AbstractRenderer;
 import org.jfree.data.category.CategoryDataset;
@@ -10,6 +13,7 @@ import org.jfree.data.datasetextension.impl.CategoryCursor;
 import org.jfree.data.datasetextension.impl.XYCursor;
 import org.jfree.data.general.Dataset;
 import org.jfree.data.xy.XYDataset;
+import org.jfree.io.SerialUtilities;
 
 /**
  * A helper class to define simple item rendering strategies.
@@ -46,34 +50,38 @@ public class IRSUtilities {
 			final Paint fillPaint, final Paint itemPaint, final Paint outlinePaint) {
 		
 		PaintIRS irs = new DefaultPaintIRS(renderer) {
-						
+
 			/** a generated serial id */
 			private static final long serialVersionUID = -7838213904327581272L;
+			
+			private transient Paint m_fillPaint = fillPaint;
+			private transient Paint m_itemPaint = itemPaint;
+			private transient Paint m_outlinePaint = outlinePaint;
 
 			
 			private final Dataset dataset = ext.getDataset();
 			
 			public Paint getItemPaint(int row, int column) {
-				if (itemPaint == null || !isSelected(row, column)) {
+				if (m_itemPaint == null || !isSelected(row, column)) {
 					return super.getItemPaint(row, column);
 				} else {
-					return itemPaint;
+					return m_itemPaint;
 				}
 			}
 			
 			public Paint getItemOutlinePaint(int row, int column) {
-				if (outlinePaint == null || !isSelected(row, column)) {
+				if (m_outlinePaint == null || !isSelected(row, column)) {
 					return super.getItemPaint(row, column);
 				} else {
-					return outlinePaint;
+					return m_outlinePaint;
 				}
 			}
 			
 			public Paint getItemFillPaint(int row, int column) {
-				if (fillPaint == null || !isSelected(row, column)) {
+				if (m_fillPaint == null || !isSelected(row, column)) {
 					return super.getItemPaint(row, column);
 				} else {
-					return fillPaint;
+					return m_fillPaint;
 				}
 			}
 			
@@ -95,6 +103,43 @@ public class IRSUtilities {
 
 				return ext.isSelected(cursor);
 			}
+			
+			
+			/**
+			 * Provides serialization support.
+			 * 
+			 * @param stream
+			 *            the output stream.
+			 * 
+			 * @throws IOException
+			 *             if there is an I/O error.
+			 */
+			private void writeObject(ObjectOutputStream stream) throws IOException {
+				stream.defaultWriteObject();
+				SerialUtilities.writePaint(m_outlinePaint, stream);
+				SerialUtilities.writePaint(m_fillPaint, stream);
+				SerialUtilities.writePaint(m_itemPaint, stream);
+			}
+
+			/**
+			 * Provides serialization support.
+			 * 
+			 * @param stream
+			 *            the input stream.
+			 * 
+			 * @throws IOException
+			 *             if there is an I/O error.
+			 * @throws ClassNotFoundException
+			 *             if there is a classpath problem.
+			 */
+			private void readObject(ObjectInputStream stream) throws IOException,
+					ClassNotFoundException {
+				stream.defaultReadObject();
+				m_outlinePaint = SerialUtilities.readPaint(stream);
+				m_fillPaint = SerialUtilities.readPaint(stream);
+				m_itemPaint = SerialUtilities.readPaint(stream);
+			}
+			
 		};
 		
 		//this is where the magic happens

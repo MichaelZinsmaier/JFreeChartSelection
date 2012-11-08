@@ -45,8 +45,12 @@ import java.awt.Color;
 import java.awt.Paint;
 import java.awt.Stroke;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
 import org.jfree.chart.panel.AbstractMouseHandler;
+import org.jfree.io.SerialUtilities;
 
 /**
  * A mouse handler that allows data items to be selected based on a selection region that is
@@ -54,6 +58,9 @@ import org.jfree.chart.panel.AbstractMouseHandler;
  *
  */
 public abstract class RegionSelectionHandler extends AbstractMouseHandler {
+
+	/** a generated serial id. */
+	private static final long serialVersionUID = -4671799719995583469L;
 
 	/**
 	 * Creates a new instance with a modifier restriction
@@ -66,17 +73,17 @@ public abstract class RegionSelectionHandler extends AbstractMouseHandler {
     /**
      * The outline stroke.
      */
-    protected Stroke outlineStroke;
+    protected transient Stroke outlineStroke;
 
     /**
      * The outline paint.
      */
-    protected Paint outlinePaint;
+    protected transient Paint outlinePaint;
 
     /**
      * The fill paint.
      */
-    protected Paint fillPaint;
+    protected transient Paint fillPaint;
 
     /**
      * Creates a new default instance.
@@ -160,4 +167,41 @@ public abstract class RegionSelectionHandler extends AbstractMouseHandler {
     public boolean isLiveHandler() {
     	return true;
     }
+    
+    
+
+	/**
+	 * Provides serialization support.
+	 * 
+	 * @param stream
+	 *            the output stream.
+	 * 
+	 * @throws IOException
+	 *             if there is an I/O error.
+	 */
+	private void writeObject(ObjectOutputStream stream) throws IOException {
+		stream.defaultWriteObject();
+		SerialUtilities.writePaint(this.outlinePaint, stream);
+		SerialUtilities.writePaint(this.fillPaint, stream);
+		SerialUtilities.writeStroke(this.outlineStroke, stream);
+	}
+
+	/**
+	 * Provides serialization support.
+	 * 
+	 * @param stream
+	 *            the input stream.
+	 * 
+	 * @throws IOException
+	 *             if there is an I/O error.
+	 * @throws ClassNotFoundException
+	 *             if there is a classpath problem.
+	 */
+	private void readObject(ObjectInputStream stream) throws IOException,
+			ClassNotFoundException {
+		stream.defaultReadObject();
+		this.outlinePaint = SerialUtilities.readPaint(stream);
+		this.fillPaint = SerialUtilities.readPaint(stream);
+		this.outlineStroke = SerialUtilities.readStroke(stream);
+	}
 }

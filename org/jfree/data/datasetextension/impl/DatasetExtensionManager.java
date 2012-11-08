@@ -1,5 +1,6 @@
 package org.jfree.data.datasetextension.impl;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -15,8 +16,11 @@ import org.jfree.data.general.Dataset;
  * @author zinsmaie
  *
  */
-public class DatasetExtensionManager {
+public class DatasetExtensionManager implements Serializable {
 
+	/** a generated serial id */
+	private static final long serialVersionUID = 3727659792806462637L;
+	
 	/**
 	 * all separate extensions have to be registered here
 	 */

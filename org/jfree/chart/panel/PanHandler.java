@@ -57,10 +57,12 @@ import org.jfree.chart.plot.PlotRenderingInfo;
  * them.
  */
 public class PanHandler extends AbstractMouseHandler {
-
+	
+    /** a generated serial id. */
+	private static final long serialVersionUID = -2454906267665359292L;
 
 	
-    /**
+	/**
      * Temporary storage for the width and height of the chart
      * drawing area during panning.
      */

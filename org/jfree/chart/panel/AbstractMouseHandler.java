@@ -43,6 +43,7 @@ package org.jfree.chart.panel;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.io.Serializable;
 
 import org.jfree.chart.ChartPanel;
 
@@ -52,9 +53,12 @@ import org.jfree.chart.ChartPanel;
  *
  */
 public abstract class AbstractMouseHandler implements MouseListener,
-        MouseMotionListener {
+        MouseMotionListener, Serializable {
 
-    /** The modifier used to invoke this handler. */
+    /** a generated serial id. */
+	private static final long serialVersionUID = -2717376020576340947L;
+	
+	/** The modifier used to invoke this handler. */
     private int modifier;
 
     /**
