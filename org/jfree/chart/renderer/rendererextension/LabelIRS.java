@@ -1,6 +1,7 @@
 package org.jfree.chart.renderer.rendererextension;
 
 import java.awt.Font;
+import java.io.Serializable;
 
 import org.jfree.chart.labels.ItemLabelPosition;
 import org.jfree.chart.renderer.AbstractRenderer;
@@ -14,7 +15,7 @@ import org.jfree.chart.renderer.AbstractRenderer;
  * 
  * @author zinsmaie
  */
-public interface LabelIRS {
+public interface LabelIRS extends Serializable {
 
 	/**
 	 * Specifies an individual item by row, column and returns the font for its label.

@@ -14,6 +14,9 @@ import org.jfree.chart.panel.AbstractMouseHandler;
  */
 public class MouseClickSelectionHandler extends AbstractMouseHandler {
 		
+	/** a generated serial id. */
+	private static final long serialVersionUID = 1101598509484156300L;
+
 	/**
 	 * default constructor 
 	 */

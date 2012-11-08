@@ -1,6 +1,7 @@
 package org.jfree.chart.renderer.rendererextension;
 
 import java.awt.Paint;
+import java.io.Serializable;
 
 import org.jfree.chart.renderer.AbstractRenderer;
 
@@ -9,11 +10,13 @@ import org.jfree.chart.renderer.AbstractRenderer;
  * Implementing classes can be used together with subclasses of {@link AbstractRenderer}
  * to control the rendering process.<br>
  * Works however only if the descendant of {@link AbstractRenderer} uses per item methods like {@link AbstractRenderer#getItemPaint(int, int)}
- * 
+ * <br>
+ * <br>
+ * Important Paint is not serializable see {@link IRSUtilities}) for the correct implementation of the custom read and write method. 
  * 
  * @author zinsmaie
  */
-public interface PaintIRS {
+public interface PaintIRS extends Serializable {
 
 	/**
 	 * Specifies an individual item by row, column and returns the item paint

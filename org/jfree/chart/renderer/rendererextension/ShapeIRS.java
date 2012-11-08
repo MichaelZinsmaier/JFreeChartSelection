@@ -1,6 +1,7 @@
 package org.jfree.chart.renderer.rendererextension;
 
 import java.awt.Shape;
+import java.io.Serializable;
 
 import org.jfree.chart.renderer.AbstractRenderer;
 
@@ -10,10 +11,13 @@ import org.jfree.chart.renderer.AbstractRenderer;
  * to control the rendering process.<br>
  * Works however only if the descendant of {@link AbstractRenderer} uses the per item method {@link AbstractRenderer#getItemShape(int, int)}
  * 
+ * <br>
+ * <br>
+ * Important Shape is not serializable see {@link IRSUtilities}) for the correct implementation of the custom read and write method. 
  * 
  * @author zinsmaie
  */
-public interface ShapeIRS {
+public interface ShapeIRS extends Serializable {
 	
 	/**
 	 * Specifies an individual item by row, column and returns its shape

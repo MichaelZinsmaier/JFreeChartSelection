@@ -61,6 +61,9 @@ import org.jfree.util.ShapeUtilities;
  */
 public class RectangularRegionSelectionHandler extends RegionSelectionHandler {
 
+	/** a generated serial id. */
+	private static final long serialVersionUID = -8496935828054326324L;
+
 	/**
 	 * The selection rectangle (in Java2D space).
 	 */

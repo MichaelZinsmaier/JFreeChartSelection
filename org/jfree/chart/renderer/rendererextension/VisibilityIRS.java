@@ -1,5 +1,7 @@
 package org.jfree.chart.renderer.rendererextension;
 
+import java.io.Serializable;
+
 import org.jfree.chart.renderer.AbstractRenderer;
 
 /**
@@ -11,7 +13,7 @@ import org.jfree.chart.renderer.AbstractRenderer;
  * 
  * @author zinsmaie
  */
-public interface VisibilityIRS {
+public interface VisibilityIRS extends Serializable {
 
 	/**
 	 * Specifies an individual item by row, column and returns true if it is visible

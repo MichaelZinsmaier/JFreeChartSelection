@@ -39,6 +39,9 @@ import org.jfree.data.general.Dataset;
  */
 public class EntitySelectionManager implements SelectionManager {
 
+	/** a generated serial id. */
+	private static final long serialVersionUID = -8963792184797912675L;
+	
 	/**
 	 * if true a entity has to intersect the selection region to be selected if
 	 * false a entity has to be completely inside the selection region to be

@@ -60,6 +60,9 @@ import org.jfree.util.ShapeUtilities;
  */
 public class FreeRegionSelectionHandler extends RegionSelectionHandler {
 
+	/** a generated serial id. */
+	private static final long serialVersionUID = -7866645942943333511L;
+
 	/**
 	 * The selection path (in Java2D space).
 	 */

@@ -55,6 +55,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.ValueAxis;
@@ -77,7 +78,10 @@ import org.jfree.util.PublicCloneable;
 public class CrosshairOverlay extends AbstractOverlay implements Overlay,
         PropertyChangeListener, PublicCloneable, Cloneable, Serializable {
 
-    /** Storage for the crosshairs along the x-axis. */
+	/** a generated serial id. */
+	private static final long serialVersionUID = 8121409975366678354L;
+
+	/** Storage for the crosshairs along the x-axis. */
     private List xCrosshairs;
 
     /** Storage for the crosshairs along the y-axis. */
